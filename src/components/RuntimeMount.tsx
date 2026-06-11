@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { PlayableConfig, RuntimeStartOptions } from '../runtime/types';
-import { ensureRuntime } from '../lib/runtimeLoader';
+import { ensureRuntime, type RuntimeHandle } from '../lib/runtimeLoader';
 
 interface Props {
   config: PlayableConfig;
@@ -8,26 +8,61 @@ interface Props {
   onCta?: (url: string) => void;
   editMode?: boolean;
   onElementTap?: (key: string) => void;
+  onTextMove?: (id: string, x: number, y: number) => void;
   elementLabels?: Record<string, string>;
   // Change this value to force a fresh remount (e.g. "replay").
   remountKey?: unknown;
 }
 
-// Mounts a playable into a div using the shared runtime. Cleans up its Pixi
-// context on unmount / config change, so many of these can coexist (gallery).
-export function RuntimeMount({ config, demo, onCta, editMode, onElementTap, elementLabels, remountKey }: Props) {
+// True when only the `texts` array differs — the store replaces section
+// objects by reference, so reference equality is an exact change detector.
+function textsOnlyDiff(a: PlayableConfig, b: PlayableConfig) {
+  return (
+    a.templateId === b.templateId &&
+    a.brand === b.brand &&
+    a.cta === b.cta &&
+    a.gameplay === b.gameplay &&
+    a.endCard === b.endCard &&
+    a.images === b.images &&
+    a.colors === b.colors
+  );
+}
+
+// Mounts a playable into a div using the shared runtime. Structural config
+// changes remount the game; text-only changes live-patch it (no flash, no
+// slow-mo warm-up restart while typing or dragging text).
+export function RuntimeMount({ config, demo, onCta, editMode, onElementTap, onTextMove, elementLabels, remountKey }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const gameRef = useRef<RuntimeHandle | null>(null);
+  const latest = useRef({ config, elementLabels });
+  latest.current = { config, elementLabels };
+
+  // Track the last *structural* config: text-only changes keep the same ref,
+  // so the mount effect below doesn't re-run for them.
+  const structRef = useRef(config);
+  if (structRef.current !== config && !textsOnlyDiff(structRef.current, config)) {
+    structRef.current = config;
+  }
+  const structConfig = structRef.current;
 
   useEffect(() => {
-    let game: { destroy: () => void } | null = null;
+    let game: RuntimeHandle | null = null;
     let cancelled = false;
     const el = ref.current!;
-    const opts: RuntimeStartOptions = { demo, onCta, editMode, onElementTap, elementLabels };
     ensureRuntime()
       .then(() => {
         if (cancelled) return;
         el.innerHTML = '';
-        game = window.PlayableRuntime!.start(config, el, opts);
+        const opts: RuntimeStartOptions = {
+          demo,
+          onCta,
+          editMode,
+          onElementTap,
+          onTextMove,
+          elementLabels: latest.current.elementLabels,
+        };
+        game = window.PlayableRuntime!.start(latest.current.config, el, opts);
+        gameRef.current = game;
       })
       .catch((e) => {
         el.innerHTML = `<div class="runtime-error">${(e as Error).message}</div>`;
@@ -35,10 +70,16 @@ export function RuntimeMount({ config, demo, onCta, editMode, onElementTap, elem
     return () => {
       cancelled = true;
       game?.destroy();
+      gameRef.current = null;
       el.innerHTML = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, demo, editMode, remountKey]);
+  }, [structConfig, demo, editMode, remountKey]);
+
+  // Fast path: live-patch text overlays on the running game.
+  useEffect(() => {
+    gameRef.current?.applyTexts?.(config.texts, elementLabels);
+  }, [config, elementLabels]);
 
   return <div className="runtime-mount" ref={ref} />;
 }

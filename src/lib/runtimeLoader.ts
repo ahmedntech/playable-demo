@@ -3,10 +3,16 @@ import type { PlayableConfig, RuntimeStartOptions } from '../runtime/types';
 // Loads the prebuilt runtime bundle (public/runtime.iife.js) once and caches it
 // on window. The same bundle powers the gallery previews, the editor preview,
 // and the exported ad — one source of truth.
+export interface RuntimeHandle {
+  destroy: () => void;
+  // Live-patches text overlays without a remount (see Runner.applyTexts).
+  applyTexts?: (texts: PlayableConfig['texts'], labels?: Record<string, string>) => void;
+}
+
 declare global {
   interface Window {
     PlayableRuntime?: {
-      start: (c: PlayableConfig, el: HTMLElement, o?: RuntimeStartOptions) => { destroy: () => void };
+      start: (c: PlayableConfig, el: HTMLElement, o?: RuntimeStartOptions) => RuntimeHandle;
     };
   }
 }

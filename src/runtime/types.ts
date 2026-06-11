@@ -1,3 +1,14 @@
+// A user-added text overlay rendered above the gameplay. Position is
+// normalized (0..1 of the design size) so it survives any canvas scale.
+export interface TextOverlay {
+  id: string;
+  content: string;
+  x: number; // 0..1 of width
+  y: number; // 0..1 of height
+  size: number; // font size at design resolution
+  color: string;
+}
+
 // The single source of truth for a playable. The editor mutates this object,
 // the runtime renders from it, and the exporter freezes it into the bundle.
 // Assets (logo) are stored as data URLs so a config is fully self-contained.
@@ -21,10 +32,12 @@ export interface PlayableConfig {
   endCard: {
     headline: string;
   };
-  // Per-element customization, keyed by the slot keys a template declares
-  // (see TemplateMeta.slots). images = uploaded data URLs; colors = hex overrides.
+  // Per-element customization, keyed by the element keys a template declares
+  // (see TemplateMeta.elements). images = uploaded data URLs; colors = hex overrides.
   images: Record<string, string>;
   colors: Record<string, string>;
+  // User-added text overlays, drawn above the gameplay in every round.
+  texts: TextOverlay[];
 }
 
 // Options the host passes to PlayableRuntime.start(). No Pixi types here so the
@@ -38,6 +51,8 @@ export interface RuntimeStartOptions {
   editMode?: boolean;
   onElementTap?: (key: string) => void;
   elementLabels?: Record<string, string>; // key → display label for edit-mode tags
+  // Fired when a text overlay is dragged to a new spot in edit mode (x/y normalized).
+  onTextMove?: (id: string, x: number, y: number) => void;
 }
 
 export const DEFAULT_CONFIG: PlayableConfig = {
@@ -62,4 +77,5 @@ export const DEFAULT_CONFIG: PlayableConfig = {
   },
   images: {},
   colors: {},
+  texts: [],
 };

@@ -9,10 +9,19 @@ Tower Stack, Slice It, Tile Tap, Perfect Stop, Spin Wheel, Match Pairs, Bubble P
 Lane Dash, Tap & Fly, Knife Hit, Ball Drop, Cannon Pop, Tap Jump. Each has an interactive mode
 and an auto-playing demo loop used for the gallery previews.
 
-**Canvas edit mode.** Opening a template lands you in edit mode: the game keeps auto-playing
-while every editable element glows with a labeled tag. Tap the element itself (the basket,
-the bird, the critter…) to get a popover with just its controls — upload art to replace it,
-or recolor it. Tap empty space to edit the background (image or color).
+**Canvas edit mode.** Opening a template lands you in edit mode: the game plays at full
+speed for ~2s so the scene populates, then eases into **slow motion** so moving elements
+are easy to tap. Every editable element glows with a labeled tag — tap the element itself
+(the basket, the bird, the critter…) to get a popover with just its controls — upload art
+to replace it, or recolor it. Tap empty space to edit the background (image or color).
+A **chips bar** under the phone lists every element as an always-reachable click target.
+
+**Text overlays.** “＋ Add text” drops a styled text onto the game. Edit its content, size
+and color in the popover, and **drag it on the phone** to place it. Text edits live-patch
+the running game (no remount), and overlays ship inside the exported ad.
+
+**End-card juice.** Confetti rain, a pulsing CTA, the brand logo above the headline, and
+a score-counter pop on every point.
 
 Under the hood each template declares its `elements` in `catalog.ts` and tags its display
 objects with `ctx.mark(obj, key)`; the runner outlines one representative instance per key
