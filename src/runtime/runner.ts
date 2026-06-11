@@ -6,6 +6,18 @@ import { whack } from './templates/whack';
 import { catchGame } from './templates/catch';
 import { stack } from './templates/stack';
 import { slice } from './templates/slice';
+import { piano } from './templates/piano';
+import { timing } from './templates/timing';
+import { wheel } from './templates/wheel';
+import { memory } from './templates/memory';
+import { bubblepop } from './templates/bubblepop';
+import { paint } from './templates/paint';
+import { lane } from './templates/lane';
+import { flappy } from './templates/flappy';
+import { knife } from './templates/knife';
+import { drop } from './templates/drop';
+import { cannon } from './templates/cannon';
+import { jump } from './templates/jump';
 import { lighten, darken } from './color';
 
 // Builds a vertical gradient texture from a base color so games have depth
@@ -34,6 +46,18 @@ const REGISTRY: Record<string, Template> = {
   catch: catchGame,
   stack,
   slice,
+  piano,
+  timing,
+  wheel,
+  memory,
+  bubblepop,
+  paint,
+  lane,
+  flappy,
+  knife,
+  drop,
+  cannon,
+  jump,
 };
 
 export class Runner {
