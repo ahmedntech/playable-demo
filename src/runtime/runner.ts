@@ -85,6 +85,13 @@ export class Runner {
   private labelPills = new Map<string, Container>();
   private editTime = 0;
 
+  // Lifecycle guards: start() awaits app init + image decoding, and the host
+  // may destroy us mid-flight (the editor remounts on every config change).
+  // Without these, a cancelled instance can finish initializing late and
+  // append a dead, frozen canvas over the live one.
+  private dead = false;
+  private inited = false;
+
   async start(config: PlayableConfig, mount: HTMLElement, opts: RuntimeStartOptions = {}) {
     this.cfg = config;
     this.editMode = !!opts.editMode;
@@ -102,8 +109,11 @@ export class Runner {
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoDensity: true,
     });
+    this.inited = true;
+    if (this.dead) { this.teardown(); return this; } // destroyed during init
 
     await this.preloadAssets();
+    if (this.dead) { this.teardown(); return this; } // destroyed during image decode
 
     const cv = this.app.canvas;
     Object.assign(cv.style, { maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' });
@@ -118,8 +128,18 @@ export class Runner {
   }
 
   destroy() {
+    if (this.dead) return;
+    this.dead = true;
+    // If start() is still awaiting init/assets, it will see `dead` when it
+    // resumes and tear down then — destroying a half-initialized app throws.
+    if (this.inited) this.teardown();
+  }
+
+  private teardown() {
     this.controller?.destroy();
+    this.controller = undefined;
     this.app.ticker.stop();
+    this.app.canvas?.remove(); // never leave a dead canvas in the DOM
     this.app.destroy(true, { children: true });
   }
 
@@ -282,6 +302,7 @@ export class Runner {
     if (this.cfg.brand.logoDataUrl) {
       try {
         const tex = await Assets.load({ src: this.cfg.brand.logoDataUrl, loadParser: 'loadTextures' });
+        if (this.dead) return; // destroyed while the logo decoded
         const logo = new Sprite(tex);
         logo.anchor.set(0.5);
         logo.scale.set(Math.min(160 / logo.width, 160 / logo.height));
