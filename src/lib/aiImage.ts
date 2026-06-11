@@ -10,7 +10,12 @@ const KEY_STORAGE = 'bigwolf-gemini-key';
 const MODEL = 'gemini-2.5-flash-image';
 
 export function getApiKey(): string | null {
-  try { return localStorage.getItem(KEY_STORAGE); } catch { return null; }
+  // a key pasted in the UI wins; otherwise fall back to .env.local (dev setup)
+  try {
+    const stored = localStorage.getItem(KEY_STORAGE);
+    if (stored) return stored;
+  } catch { /* ignore */ }
+  return (import.meta.env?.VITE_GEMINI_KEY as string | undefined) || null;
 }
 
 export function setApiKey(key: string) {
@@ -55,6 +60,13 @@ export async function generateImage({ prompt, aspect, removeBg }: GenerateOption
       const err = await res.json();
       if (err?.error?.message) msg = err.error.message;
     } catch { /* keep status message */ }
+    // Image models have zero free-tier quota — surface that clearly instead of
+    // Google's generic wall of text.
+    if (res.status === 429 && /free_tier|limit: 0/.test(msg)) {
+      throw new Error(
+        'Your key works, but image generation has no free tier — enable billing on your Google AI Studio project (aistudio.google.com → Settings → Plan), then try again. Images cost ~$0.04 each.'
+      );
+    }
     throw new Error(msg);
   }
 

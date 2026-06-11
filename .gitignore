@@ -4,3 +4,4 @@ public/runtime.iife.js
 *.log
 .DS_Store
 tsconfig.tsbuildinfo
+.env.local
