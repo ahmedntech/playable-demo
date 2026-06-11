@@ -70,6 +70,8 @@ button:hover { border-color: var(--accent); }
 button.primary { background: var(--gold); border-color: var(--gold); color: #1d2a31; font-weight: 700; width: 100%; }
 button.primary:hover { filter: brightness(1.07); border-color: var(--gold); }
 .status { font-size: 13px; margin-top: 12px; }
+.link-btn { background: none; border: none; color: var(--muted); padding: 2px 0 10px; font-size: 12px; cursor: pointer; text-align: left; }
+.link-btn:hover { color: var(--accent); border-color: transparent; }
 
 .stage-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; }
 .hint { color: var(--muted); font-size: 12px; }

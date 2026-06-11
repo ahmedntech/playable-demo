@@ -1,4 +1,5 @@
 import { Application, Container, Graphics, Sprite, Text, Texture, Assets } from 'pixi.js';
+import { coverSprite } from './assets';
 import type { PlayableConfig, RuntimeStartOptions } from './types';
 import type { Template, Controller, GameCtx } from './template';
 import { tapTargets } from './templates/tapTargets';
@@ -72,6 +73,8 @@ export class Runner {
   private score = 0;
   private hud?: Text;
   private controller?: Controller;
+  private textures = new Map<string, Texture>(); // preloaded per-element images
+  private bgTex: Texture | null = null;
 
   async start(config: PlayableConfig, mount: HTMLElement, opts: RuntimeStartOptions = {}) {
     this.cfg = config;
@@ -87,6 +90,8 @@ export class Runner {
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoDensity: true,
     });
+
+    await this.preloadAssets();
 
     const cv = this.app.canvas;
     Object.assign(cv.style, { maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' });
@@ -105,8 +110,35 @@ export class Runner {
     this.app.destroy(true, { children: true });
   }
 
+  // Loads every uploaded image (per-element slots + background) into textures.
+  private async preloadAssets() {
+    const jobs: Promise<void>[] = [];
+    for (const [key, url] of Object.entries(this.cfg.images ?? {})) {
+      if (!url) continue;
+      jobs.push(
+        Assets.load({ src: url, loadParser: 'loadTextures' })
+          .then((t: Texture) => { this.textures.set(key, t); })
+          .catch(() => {})
+      );
+    }
+    if (this.cfg.brand.bgImage) {
+      jobs.push(
+        Assets.load({ src: this.cfg.brand.bgImage, loadParser: 'loadTextures' })
+          .then((t: Texture) => { this.bgTex = t; })
+          .catch(() => {})
+      );
+    }
+    await Promise.all(jobs);
+  }
+
   private drawBackdrop() {
     const base = this.cfg.brand.bgColor;
+    if (this.bgTex) {
+      this.bgLayer.addChild(coverSprite(this.bgTex, W, H));
+      // subtle darken so game objects stay legible over any photo
+      this.bgLayer.addChild(new Graphics().rect(0, 0, W, H).fill({ color: 0x000000, alpha: 0.18 }));
+      return;
+    }
     const bg = new Sprite(gradientTexture(base));
     bg.width = W;
     bg.height = H;
@@ -185,6 +217,8 @@ export class Runner {
       demo: this.demo,
       addScore: (n = 1) => this.addScore(n),
       finish: () => this.finish(),
+      color: (key, fallback) => this.cfg.colors?.[key] || fallback,
+      tex: (key) => this.textures.get(key) ?? null,
     };
     this.controller = this.tpl.start(ctx);
   }

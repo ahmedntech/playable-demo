@@ -2,6 +2,7 @@ import { Container, Graphics, Ticker, Rectangle } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 interface Entity { c: Container; lane: number; coin: boolean }
 
@@ -11,7 +12,9 @@ export const lane: Template = {
   id: 'lane',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('heroColor', config.brand.primaryColor);
+    const heroTex = ctx.tex('hero');
+    const coinTex = ctx.tex('coin');
     const lanes = [W * 0.25, W * 0.5, W * 0.75];
     const heroY = H - 110;
 
@@ -20,9 +23,13 @@ export const lane: Template = {
     }
 
     const hero = new Container();
-    hero.addChild(new Graphics().roundRect(-22, -22, 44, 44, 10).fill(p));
-    hero.addChild(new Graphics().circle(-8, -6, 5).fill(0xffffff));
-    hero.addChild(new Graphics().circle(8, -6, 5).fill(0xffffff));
+    if (heroTex) {
+      hero.addChild(fitSprite(heroTex, 52, 52));
+    } else {
+      hero.addChild(new Graphics().roundRect(-22, -22, 44, 44, 10).fill(p));
+      hero.addChild(new Graphics().circle(-8, -6, 5).fill(0xffffff));
+      hero.addChild(new Graphics().circle(8, -6, 5).fill(0xffffff));
+    }
     let heroLane = 1;
     hero.position.set(lanes[heroLane], heroY);
     layer.addChild(hero);
@@ -37,8 +44,12 @@ export const lane: Template = {
       const coin = Math.random() < 0.6;
       const c = new Container();
       if (coin) {
-        c.addChild(new Graphics().circle(0, 0, 16).fill(0xffd54a));
-        c.addChild(new Graphics().circle(-5, -5, 6).fill({ color: 0xffffff, alpha: 0.5 }));
+        if (coinTex) {
+          c.addChild(fitSprite(coinTex, 36, 36));
+        } else {
+          c.addChild(new Graphics().circle(0, 0, 16).fill(0xffd54a));
+          c.addChild(new Graphics().circle(-5, -5, 6).fill({ color: 0xffffff, alpha: 0.5 }));
+        }
       } else {
         c.addChild(new Graphics().roundRect(-24, -24, 48, 48, 8).fill(darken(p, 0.35)));
         c.addChild(new Graphics().roundRect(-24, -24, 48, 48, 8).stroke({ width: 3, color: lighten(p, 0.2) }));

@@ -2,6 +2,7 @@ import { Container, Graphics, Ticker, Rectangle } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 interface Obstacle { c: Container; scored: boolean }
 
@@ -11,15 +12,22 @@ export const jump: Template = {
   id: 'jump',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('heroColor', config.brand.primaryColor);
+    const heroTex = ctx.tex('hero');
     const groundY = H * 0.72;
 
     layer.addChild(new Graphics().rect(0, groundY + 24, W, H - groundY - 24).fill(darken(config.brand.bgColor, 0.3)));
     layer.addChild(new Graphics().rect(0, groundY + 24, W, 3).fill({ color: lighten(p, 0.3), alpha: 0.6 }));
 
     const hero = new Container();
-    hero.addChild(new Graphics().roundRect(-18, -36, 36, 36, 8).fill(p));
-    hero.addChild(new Graphics().circle(6, -24, 5).fill(0xffffff));
+    if (heroTex) {
+      const sp = fitSprite(heroTex, 46, 46);
+      sp.y = -23; // sit on the ground line (hero origin is at its feet)
+      hero.addChild(sp);
+    } else {
+      hero.addChild(new Graphics().roundRect(-18, -36, 36, 36, 8).fill(p));
+      hero.addChild(new Graphics().circle(6, -24, 5).fill(0xffffff));
+    }
     const heroX = W * 0.26;
     let hy = 0, vy = 0; // hy = height above ground
     hero.position.set(heroX, groundY);

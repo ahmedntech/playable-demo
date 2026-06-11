@@ -2,6 +2,7 @@ import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 // Throw knives into a spinning log. Land a knife on top of an existing one and
 // the round ends. Demo throws whenever the top is clear.
@@ -10,28 +11,33 @@ export const knife: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
     const p = config.brand.primaryColor;
+    const logCol = ctx.color('logColor', darken(p, 0.25));
+    const knifeTex = ctx.tex('knife');
     const cx = W / 2, cy = H * 0.4, R = 96;
 
     const log = new Container();
     log.position.set(cx, cy);
-    log.addChild(new Graphics().circle(0, 0, R).fill(darken(p, 0.25)));
-    log.addChild(new Graphics().circle(0, 0, R * 0.6).stroke({ width: 6, color: darken(p, 0.4), alpha: 0.6 }));
-    log.addChild(new Graphics().circle(0, 0, 14).fill(lighten(p, 0.3)));
+    log.addChild(new Graphics().circle(0, 0, R).fill(logCol));
+    log.addChild(new Graphics().circle(0, 0, R * 0.6).stroke({ width: 6, color: darken(logCol, 0.25), alpha: 0.6 }));
+    log.addChild(new Graphics().circle(0, 0, 14).fill(lighten(logCol, 0.35)));
     layer.addChild(log);
 
     const stuck: number[] = []; // angles (radians, in log space) of stuck knives
-    let spin = 1.4 + config.gameplay.difficulty * 0.25;
-    let flying: { g: Graphics; y: number } | null = null;
+    const spin = 1.4 + config.gameplay.difficulty * 0.25;
+    let flying: { g: Container; y: number } | null = null;
 
-    function makeKnife() {
+    function makeKnife(): Container {
+      const c = new Container();
+      if (knifeTex) { c.addChild(fitSprite(knifeTex, 22, 70)); return c; }
       const g = new Graphics();
       g.roundRect(-4, 0, 8, 46, 3).fill(0xdfe6ee);
       g.poly([-4, 0, 4, 0, 0, -12]).fill(0xeef3f8);
       g.roundRect(-5, 40, 10, 16, 3).fill(darken(p, 0.1));
-      return g;
+      c.addChild(g);
+      return c;
     }
 
-    function stickKnife(g: Graphics) {
+    function stickKnife(g: Container) {
       // angle on the log where it sticks = the bottom (pointing up into the log)
       const ang = (Math.PI / 2 - log.rotation) % (Math.PI * 2);
       // collision: too close to an existing knife angle?

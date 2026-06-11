@@ -9,7 +9,7 @@ export const timing: Template = {
   id: 'timing',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('zoneColor', config.brand.primaryColor);
     const barX = 40, barW = W - 80, barY = H * 0.5, barH = 28;
 
     layer.addChild(new Graphics().roundRect(barX, barY, barW, barH, 14).fill(darken(config.brand.bgColor, 0.4)));

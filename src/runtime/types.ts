@@ -6,8 +6,9 @@ export interface PlayableConfig {
   brand: {
     name: string;
     logoDataUrl: string | null; // base64 data URL, inlined into exports
-    primaryColor: string; // hex, used for buttons/targets
-    bgColor: string; // hex, game background
+    primaryColor: string; // hex, default color for game objects/buttons
+    bgColor: string; // hex, game background (used when no bgImage)
+    bgImage: string | null; // data URL — cover-fills the game background
   };
   cta: {
     text: string;
@@ -20,6 +21,10 @@ export interface PlayableConfig {
   endCard: {
     headline: string;
   };
+  // Per-element customization, keyed by the slot keys a template declares
+  // (see TemplateMeta.slots). images = uploaded data URLs; colors = hex overrides.
+  images: Record<string, string>;
+  colors: Record<string, string>;
 }
 
 // Options the host passes to PlayableRuntime.start(). No Pixi types here so the
@@ -36,6 +41,7 @@ export const DEFAULT_CONFIG: PlayableConfig = {
     logoDataUrl: null,
     primaryColor: '#ff4d6d',
     bgColor: '#2a1f4a',
+    bgImage: null,
   },
   cta: {
     text: 'Play Now',
@@ -48,4 +54,6 @@ export const DEFAULT_CONFIG: PlayableConfig = {
   endCard: {
     headline: 'Like what you played?',
   },
+  images: {},
+  colors: {},
 };

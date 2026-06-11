@@ -1,6 +1,7 @@
 import { Container, Graphics, Rectangle, Ticker, type FederatedPointerEvent } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
+import { fitSprite } from '../assets';
 
 // A basket tracks the pointer along the bottom. Stars fall; catch one to score.
 // Demo mode auto-steers the basket toward the lowest falling star.
@@ -9,11 +10,17 @@ export const catchGame: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
 
-    const p = config.brand.primaryColor;
+    const p = ctx.color('basketColor', config.brand.primaryColor);
+    const basketTex = ctx.tex('basket');
+    const starTex = ctx.tex('star');
     const paddle = new Container();
-    paddle.addChild(new Graphics().roundRect(-48, -16, 96, 34, 17).fill(darken(p, 0.22))); // base
-    paddle.addChild(new Graphics().roundRect(-46, -16, 92, 24, 14).fill(p)); // top
-    paddle.addChild(new Graphics().roundRect(-40, -13, 80, 6, 3).fill({ color: lighten(p, 0.5), alpha: 0.5 })); // shine
+    if (basketTex) {
+      paddle.addChild(fitSprite(basketTex, 100, 56));
+    } else {
+      paddle.addChild(new Graphics().roundRect(-48, -16, 96, 34, 17).fill(darken(p, 0.22))); // base
+      paddle.addChild(new Graphics().roundRect(-46, -16, 92, 24, 14).fill(p)); // top
+      paddle.addChild(new Graphics().roundRect(-40, -13, 80, 6, 3).fill({ color: lighten(p, 0.5), alpha: 0.5 })); // shine
+    }
     paddle.x = W / 2;
     paddle.y = H - 96;
     layer.addChild(paddle);
@@ -32,10 +39,14 @@ export const catchGame: Template = {
 
     function spawn() {
       const it = new Container();
-      it.addChild(new Graphics().star(0, 0, 5, 26, 13).fill({ color: 0xffe27a, alpha: 0.22 })); // glow
-      it.addChild(new Graphics().star(0, 0, 5, 18, 9).fill(0xffd54a)); // body
-      it.addChild(new Graphics().star(0, 0, 5, 18, 9).stroke({ width: 2, color: 0xffffff, alpha: 0.65 }));
-      it.addChild(new Graphics().star(0, -2, 5, 8, 4).fill({ color: 0xffffff, alpha: 0.55 })); // sparkle
+      if (starTex) {
+        it.addChild(fitSprite(starTex, 44, 44));
+      } else {
+        it.addChild(new Graphics().star(0, 0, 5, 26, 13).fill({ color: 0xffe27a, alpha: 0.22 })); // glow
+        it.addChild(new Graphics().star(0, 0, 5, 18, 9).fill(0xffd54a)); // body
+        it.addChild(new Graphics().star(0, 0, 5, 18, 9).stroke({ width: 2, color: 0xffffff, alpha: 0.65 }));
+        it.addChild(new Graphics().star(0, -2, 5, 8, 4).fill({ color: 0xffffff, alpha: 0.55 })); // sparkle
+      }
       it.x = 40 + Math.random() * (W - 80);
       it.y = -20;
       (it as any)._v = 130 + config.gameplay.difficulty * 32;

@@ -13,7 +13,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 export function Editor() {
-  const { config, set, restart, backToGallery } = useEditor();
+  const { config, set, setImage, setColor, setBgImage, restart, backToGallery } = useEditor();
   const [network, setNetwork] = useState('applovin');
   const [status, setStatus] = useState<string | null>(null);
   const template = getTemplate(config.templateId);
@@ -45,7 +45,7 @@ export function Editor() {
         <Field label="Game name">
           <input value={config.brand.name} onChange={(e) => set('brand', { name: e.target.value })} />
         </Field>
-        <Field label="Logo">
+        <Field label="Logo (intro screen)">
           <input
             type="file"
             accept="image/*"
@@ -58,9 +58,54 @@ export function Editor() {
         <Field label="Primary color">
           <input type="color" value={config.brand.primaryColor} onChange={(e) => set('brand', { primaryColor: e.target.value })} />
         </Field>
-        <Field label="Background">
+      </Section>
+
+      <Section title="Background">
+        <Field label="Background image">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const f = e.target.files?.[0];
+              if (f) setBgImage(await readFileAsDataUrl(f));
+            }}
+          />
+        </Field>
+        {config.brand.bgImage && (
+          <button className="link-btn" onClick={() => setBgImage(null)}>✕ Remove background image</button>
+        )}
+        <Field label="Background color">
           <input type="color" value={config.brand.bgColor} onChange={(e) => set('brand', { bgColor: e.target.value })} />
         </Field>
+      </Section>
+
+      <Section title="Elements">
+        {template.slots.map((slot) =>
+          slot.kind === 'image' ? (
+            <div className="field" key={slot.key}>
+              <span>{slot.label} image</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setImage(slot.key, await readFileAsDataUrl(f));
+                }}
+              />
+              {config.images[slot.key] && (
+                <button className="link-btn" onClick={() => setImage(slot.key, null)}>✕ Remove {slot.label.toLowerCase()}</button>
+              )}
+            </div>
+          ) : (
+            <Field label={slot.label} key={slot.key}>
+              <input
+                type="color"
+                value={config.colors[slot.key] ?? config.brand.primaryColor}
+                onChange={(e) => setColor(slot.key, e.target.value)}
+              />
+            </Field>
+          )
+        )}
       </Section>
 
       <Section title="Gameplay">

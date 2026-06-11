@@ -9,6 +9,12 @@ Tower Stack, Slice It, Tile Tap, Perfect Stop, Spin Wheel, Match Pairs, Bubble P
 Lane Dash, Tap & Fly, Knife Hit, Ball Drop, Cannon Pop, Tap Jump. Each has an interactive mode
 and an auto-playing demo loop used for the gallery previews.
 
+**Per-element customization.** Each template declares editable *slots* (in `catalog.ts`):
+upload an image to swap a game object (the basket, the bird, the critter…), set a background
+image, and recolor individual elements. The editor renders these controls automatically from
+the slot list; the runtime gives each game `ctx.tex(key)` / `ctx.color(key, fallback)` and
+falls back to the drawn shape when no image is provided.
+
 ## The one idea that holds it together
 
 The **same runtime** (`src/runtime/`, built to `public/runtime.iife.js`) powers both the

@@ -2,6 +2,7 @@ import { Container, Graphics, Ticker, Rectangle } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 interface Pipe { c: Container; gapY: number; gapH: number; passed: boolean }
 
@@ -11,16 +12,22 @@ export const flappy: Template = {
   id: 'flappy',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('birdColor', config.brand.primaryColor);
+    const birdTex = ctx.tex('bird');
+    const pipeCol = ctx.color('pipeColor', darken(config.brand.primaryColor, 0.2));
     const birdX = W * 0.3;
     const pipeW = 56;
     const gapH = 180 - config.gameplay.difficulty * 12;
     const speed = 130 + config.gameplay.difficulty * 22;
 
     const bird = new Container();
-    bird.addChild(new Graphics().circle(0, 0, 16).fill(p));
-    bird.addChild(new Graphics().circle(5, -4, 4).fill(0xffffff));
-    bird.addChild(new Graphics().poly([14, 0, 24, -4, 24, 4]).fill(lighten(p, 0.3)));
+    if (birdTex) {
+      bird.addChild(fitSprite(birdTex, 40, 40));
+    } else {
+      bird.addChild(new Graphics().circle(0, 0, 16).fill(p));
+      bird.addChild(new Graphics().circle(5, -4, 4).fill(0xffffff));
+      bird.addChild(new Graphics().poly([14, 0, 24, -4, 24, 4]).fill(lighten(p, 0.3)));
+    }
     let by = H / 2, vy = 0;
     bird.position.set(birdX, by);
     layer.addChild(bird);
@@ -31,9 +38,9 @@ export const flappy: Template = {
     function spawn() {
       const gapY = 120 + Math.random() * (H - 320);
       const c = new Container();
-      c.addChild(new Graphics().rect(0, 0, pipeW, gapY).fill(darken(p, 0.2)));
-      c.addChild(new Graphics().rect(0, gapY + gapH, pipeW, H - gapY - gapH).fill(darken(p, 0.2)));
-      c.addChild(new Graphics().rect(0, 0, pipeW, gapY).stroke({ width: 2, color: lighten(p, 0.2), alpha: 0.5 }));
+      c.addChild(new Graphics().rect(0, 0, pipeW, gapY).fill(pipeCol));
+      c.addChild(new Graphics().rect(0, gapY + gapH, pipeW, H - gapY - gapH).fill(pipeCol));
+      c.addChild(new Graphics().rect(0, 0, pipeW, gapY).stroke({ width: 2, color: lighten(pipeCol, 0.3), alpha: 0.5 }));
       c.x = W + 10;
       layer.addChild(c);
       pipes.push({ c, gapY, gapH, passed: false });

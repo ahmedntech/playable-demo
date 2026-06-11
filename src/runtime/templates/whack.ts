@@ -1,6 +1,7 @@
 import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
+import { fitSprite } from '../assets';
 
 interface Hole { x: number; y: number; mole: Container | null; t: number }
 
@@ -29,19 +30,25 @@ export const whack: Template = {
     let spawnT = 0;
     const interval = 1.0 - config.gameplay.difficulty * 0.13;
 
+    const p = ctx.color('moleColor', config.brand.primaryColor);
+    const moleTex = ctx.tex('mole');
+
     function popUp(h: Hole) {
-      const p = config.brand.primaryColor;
       const m = new Container();
-      m.addChild(new Graphics().circle(-19, -20, 9).fill(darken(p, 0.15))); // ears
-      m.addChild(new Graphics().circle(19, -20, 9).fill(darken(p, 0.15)));
-      m.addChild(new Graphics().circle(0, 2, 32).fill(darken(p, 0.18))); // lower body
-      m.addChild(new Graphics().circle(0, -2, 30).fill(p)); // face
-      m.addChild(new Graphics().circle(-9, -10, 12).fill({ color: lighten(p, 0.45), alpha: 0.45 })); // highlight
-      m.addChild(new Graphics().circle(-10, -4, 6).fill(0xffffff)); // eyes
-      m.addChild(new Graphics().circle(10, -4, 6).fill(0xffffff));
-      m.addChild(new Graphics().circle(-9, -3, 3).fill(0x14202a)); // pupils
-      m.addChild(new Graphics().circle(11, -3, 3).fill(0x14202a));
-      m.addChild(new Graphics().circle(0, 6, 4).fill(0x14202a)); // nose
+      if (moleTex) {
+        m.addChild(fitSprite(moleTex, 72, 72));
+      } else {
+        m.addChild(new Graphics().circle(-19, -20, 9).fill(darken(p, 0.15))); // ears
+        m.addChild(new Graphics().circle(19, -20, 9).fill(darken(p, 0.15)));
+        m.addChild(new Graphics().circle(0, 2, 32).fill(darken(p, 0.18))); // lower body
+        m.addChild(new Graphics().circle(0, -2, 30).fill(p)); // face
+        m.addChild(new Graphics().circle(-9, -10, 12).fill({ color: lighten(p, 0.45), alpha: 0.45 })); // highlight
+        m.addChild(new Graphics().circle(-10, -4, 6).fill(0xffffff)); // eyes
+        m.addChild(new Graphics().circle(10, -4, 6).fill(0xffffff));
+        m.addChild(new Graphics().circle(-9, -3, 3).fill(0x14202a)); // pupils
+        m.addChild(new Graphics().circle(11, -3, 3).fill(0x14202a));
+        m.addChild(new Graphics().circle(0, 6, 4).fill(0x14202a)); // nose
+      }
       m.x = h.x;
       m.y = h.y;
       m.eventMode = 'static';

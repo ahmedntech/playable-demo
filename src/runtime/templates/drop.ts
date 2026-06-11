@@ -1,7 +1,8 @@
-import { Graphics, Ticker, Rectangle } from 'pixi.js';
+import { Container, Graphics, Ticker, Rectangle } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 // Tap to drop a ball; it bounces through a peg field into the slots below.
 // Each ball that lands scores. Demo auto-drops at random positions.
@@ -9,7 +10,8 @@ export const drop: Template = {
   id: 'drop',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('ballColor', config.brand.primaryColor);
+    const ballTex = ctx.tex('ball');
     const pegTop = H * 0.22, pegRows = 6, pegGap = 46;
 
     // decorative pegs + nudge rows
@@ -28,14 +30,18 @@ export const drop: Template = {
       layer.addChild(new Graphics().rect(x - 1, slotY, 2, 70).fill({ color: 0xffffff, alpha: 0.08 }));
     }
 
-    interface Ball { g: Graphics; x: number; y: number; vx: number; vy: number; row: number }
+    interface Ball { g: Container; x: number; y: number; vx: number; vy: number; row: number }
     const balls: Ball[] = [];
     let demoT = 0;
 
     function dropAt(x: number) {
-      const g = new Graphics();
-      g.circle(0, 0, 12).fill(p);
-      g.circle(-4, -4, 4).fill({ color: 0xffffff, alpha: 0.5 });
+      const g = new Container();
+      if (ballTex) {
+        g.addChild(fitSprite(ballTex, 28, 28));
+      } else {
+        g.addChild(new Graphics().circle(0, 0, 12).fill(p));
+        g.addChild(new Graphics().circle(-4, -4, 4).fill({ color: 0xffffff, alpha: 0.5 }));
+      }
       g.position.set(x, pegTop - 40);
       layer.addChild(g);
       balls.push({ g, x, y: pegTop - 40, vx: 0, vy: 0, row: 0 });

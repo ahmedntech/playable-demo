@@ -9,7 +9,7 @@ export const wheel: Template = {
   id: 'wheel',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('wheelColor', config.brand.primaryColor);
     const cx = W / 2, cy = H * 0.46, R = 124;
     const segs = 6;
     const palette = [p, lighten(p, 0.25), darken(p, 0.18), lighten(p, 0.45), darken(p, 0.32), lighten(p, 0.1)];

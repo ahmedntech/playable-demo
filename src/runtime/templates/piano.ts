@@ -2,6 +2,7 @@ import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
 // Tiles fall down 4 columns; tap each tile before it slides off the bottom.
 export const piano: Template = {
@@ -13,7 +14,8 @@ export const piano: Template = {
     const cw = W / cols;
     const tw = cw - 10;
     const th = 96;
-    const tile = darken(config.brand.bgColor, 0.4);
+    const tile = ctx.color('tileColor', darken(config.brand.bgColor, 0.4));
+    const tileTex = ctx.tex('tile');
 
     for (let i = 1; i < cols; i++) {
       layer.addChild(new Graphics().rect(i * cw - 1, 0, 2, H).fill({ color: 0xffffff, alpha: 0.06 }));
@@ -27,9 +29,15 @@ export const piano: Template = {
     function spawn() {
       const col = Math.floor(Math.random() * cols);
       const t = new Container();
-      t.addChild(new Graphics().roundRect(0, 0, tw, th, 8).fill(tile));
-      t.addChild(new Graphics().roundRect(0, 0, tw, th, 8).stroke({ width: 2, color: lighten(p, 0.2), alpha: 0.9 }));
-      t.addChild(new Graphics().roundRect(8, 10, tw - 16, 8, 4).fill({ color: lighten(p, 0.4), alpha: 0.35 }));
+      if (tileTex) {
+        const sp = fitSprite(tileTex, tw, th);
+        sp.x = tw / 2; sp.y = th / 2;
+        t.addChild(sp);
+      } else {
+        t.addChild(new Graphics().roundRect(0, 0, tw, th, 8).fill(tile));
+        t.addChild(new Graphics().roundRect(0, 0, tw, th, 8).stroke({ width: 2, color: lighten(p, 0.2), alpha: 0.9 }));
+        t.addChild(new Graphics().roundRect(8, 10, tw - 16, 8, 4).fill({ color: lighten(p, 0.4), alpha: 0.35 }));
+      }
       t.x = col * cw + 5;
       t.y = -th;
       (t as any)._demo = 0.5 + Math.random() * 0.6;

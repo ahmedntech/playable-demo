@@ -9,7 +9,7 @@ export const stack: Template = {
   id: 'stack',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('blockColor', config.brand.primaryColor);
     const BH = 32; // block height
     const dropY = H * 0.30; // where the tower's top block rests
 

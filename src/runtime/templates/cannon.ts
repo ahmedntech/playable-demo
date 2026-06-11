@@ -2,8 +2,9 @@ import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
 import { ringFlash } from '../fx';
+import { fitSprite } from '../assets';
 
-interface Target { g: Graphics; x: number; y: number; vx: number }
+interface Target { g: Container; x: number; y: number; vx: number }
 interface Shot { g: Graphics; x: number; y: number; vx: number; vy: number }
 
 // A cannon at the bottom sweeps its aim back and forth. Tap to fire along the
@@ -13,6 +14,8 @@ export const cannon: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
     const p = config.brand.primaryColor;
+    const targetCol = ctx.color('targetColor', p);
+    const targetTex = ctx.tex('target');
     const ox = W / 2, oy = H - 70;
 
     const barrel = new Container();
@@ -31,9 +34,13 @@ export const cannon: Template = {
     let spawnT = 0;
 
     function spawnTarget() {
-      const g = new Graphics();
-      g.circle(0, 0, 20).fill(lighten(p, 0.35));
-      g.circle(0, 0, 10).fill(p);
+      const g = new Container();
+      if (targetTex) {
+        g.addChild(fitSprite(targetTex, 44, 44));
+      } else {
+        g.addChild(new Graphics().circle(0, 0, 20).fill(lighten(targetCol, 0.35)));
+        g.addChild(new Graphics().circle(0, 0, 10).fill(targetCol));
+      }
       const y = 80 + Math.random() * (H * 0.4);
       const fromLeft = Math.random() < 0.5;
       g.position.set(fromLeft ? -20 : W + 20, y);
@@ -96,7 +103,7 @@ export const cannon: Template = {
         }
       }
     };
-    function remove<T>(arr: T[], item: T, g: Graphics) { const i = arr.indexOf(item); if (i >= 0) { arr.splice(i, 1); g.destroy(); } }
+    function remove<T>(arr: T[], item: T, g: Container) { const i = arr.indexOf(item); if (i >= 0) { arr.splice(i, 1); g.destroy(); } }
     app.ticker.add(tick);
 
     return {

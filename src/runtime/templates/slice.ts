@@ -1,6 +1,7 @@
 import { Container, Graphics, Rectangle, Ticker, type FederatedPointerEvent } from 'pixi.js';
 import type { Template } from '../template';
 import { lighten, darken } from '../color';
+import { fitSprite } from '../assets';
 
 interface Fruit { c: Container; x: number; y: number; vx: number; vy: number; r: number }
 
@@ -10,7 +11,8 @@ export const slice: Template = {
   id: 'slice',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = config.brand.primaryColor;
+    const p = ctx.color('fruitColor', config.brand.primaryColor);
+    const fruitTex = ctx.tex('fruit');
     const GRAV = 900;
     const fruits: Fruit[] = [];
     let spawnT = 0;
@@ -18,6 +20,10 @@ export const slice: Template = {
 
     function makeFruit(r: number) {
       const c = new Container();
+      if (fruitTex) {
+        c.addChild(fitSprite(fruitTex, r * 2.2, r * 2.2));
+        return c;
+      }
       c.addChild(new Graphics().circle(0, 0, r).fill(p));
       c.addChild(new Graphics().circle(-r * 0.3, -r * 0.3, r * 0.45).fill({ color: lighten(p, 0.5), alpha: 0.5 }));
       c.addChild(new Graphics().circle(0, 0, r).stroke({ width: 2, color: 0xffffff, alpha: 0.5 }));

@@ -1,4 +1,4 @@
-import type { Application, Container } from 'pixi.js';
+import type { Application, Container, Texture } from 'pixi.js';
 import type { PlayableConfig } from './types';
 
 // Context handed to a template's gameplay. The Runner owns the app, the intro,
@@ -13,6 +13,9 @@ export interface GameCtx {
   demo: boolean; // true = auto-playing preview loop (no scoring/win)
   addScore: (n?: number) => void;
   finish: () => void; // end the round now (e.g. on a miss) → end card; restarts in demo
+  // Per-element customization (see TemplateMeta.slots):
+  color: (key: string, fallback: string) => string; // user color override or fallback
+  tex: (key: string) => Texture | null; // user-uploaded image as a preloaded texture, or null
 }
 
 export interface Controller {
