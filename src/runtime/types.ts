@@ -2,6 +2,7 @@
 // the runtime renders from it, and the exporter freezes it into the bundle.
 // Assets (logo) are stored as data URLs so a config is fully self-contained.
 export interface PlayableConfig {
+  templateId: string; // which game template to run (see templates/catalog.ts)
   brand: {
     name: string;
     logoDataUrl: string | null; // base64 data URL, inlined into exports
@@ -13,15 +14,23 @@ export interface PlayableConfig {
     url: string; // store / app listing the ad drives to
   };
   gameplay: {
-    targetScore: number; // taps needed to win
-    difficulty: number; // 1 (easy) .. 5 (hard) — affects spawn speed & lifetime
+    targetScore: number; // taps/catches needed to win
+    difficulty: number; // 1 (easy) .. 5 (hard) — affects speed & lifetime
   };
   endCard: {
     headline: string;
   };
 }
 
+// Options the host passes to PlayableRuntime.start(). No Pixi types here so the
+// editor can import this freely.
+export interface RuntimeStartOptions {
+  onCta?: (url: string) => void; // CTA handler (networks inject their own)
+  demo?: boolean; // auto-playing loop for gallery previews (no win/end card)
+}
+
 export const DEFAULT_CONFIG: PlayableConfig = {
+  templateId: 'tap-targets',
   brand: {
     name: 'Your Game',
     logoDataUrl: null,

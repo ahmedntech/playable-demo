@@ -1,0 +1,90 @@
+import { Container, Graphics, Ticker } from 'pixi.js';
+import type { Template } from '../template';
+
+interface Hole { x: number; y: number; mole: Container | null; t: number }
+
+// A 3x3 grid of holes. Critters pop up and retract; tap one while it's up to
+// score. Demo mode auto-bonks them with a flash.
+export const whack: Template = {
+  id: 'whack',
+  start(ctx) {
+    const { app, layer, config, W, demo } = ctx;
+    const cols = 3, rows = 3, top = 170, gapY = 130, marginX = 56;
+    const gapX = (W - 2 * marginX) / (cols - 1);
+    const holes: Hole[] = [];
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = marginX + c * gapX;
+        const y = top + r * gapY;
+        layer.addChild(new Graphics().ellipse(x, y + 28, 42, 16).fill(0x000000));
+        holes.push({ x, y, mole: null, t: 0 });
+      }
+    }
+
+    let spawnT = 0;
+    const interval = 1.0 - config.gameplay.difficulty * 0.13;
+
+    function popUp(h: Hole) {
+      const m = new Container();
+      m.addChild(new Graphics().circle(0, 0, 32).fill(config.brand.primaryColor));
+      m.addChild(new Graphics().circle(-11, -7, 5).fill(0xffffff));
+      m.addChild(new Graphics().circle(11, -7, 5).fill(0xffffff));
+      m.x = h.x;
+      m.y = h.y;
+      m.eventMode = 'static';
+      m.cursor = 'pointer';
+      m.on('pointertap', () => { if (h.mole === m) hit(h, true); });
+      layer.addChild(m);
+      h.mole = m;
+      h.t = demo ? 0.4 + Math.random() * 0.5 : 1.5 - config.gameplay.difficulty * 0.18;
+    }
+
+    function hit(h: Hole, scored: boolean) {
+      if (!h.mole) return;
+      const m = h.mole;
+      h.mole = null;
+      flash(m.x, m.y);
+      m.destroy();
+      if (scored) ctx.addScore();
+    }
+
+    function flash(x: number, y: number) {
+      const f = new Graphics().circle(0, 0, 36).stroke({ width: 3, color: 0xffffff, alpha: 0.9 });
+      f.position.set(x, y);
+      layer.addChild(f);
+      let a = 1;
+      const ft = (t: Ticker) => {
+        a -= t.deltaMS / 250;
+        f.alpha = Math.max(0, a);
+        f.scale.set(1 + (1 - a));
+        if (a <= 0) { f.destroy(); app.ticker.remove(ft); }
+      };
+      app.ticker.add(ft);
+    }
+
+    const tick = (t: Ticker) => {
+      const dt = t.deltaMS / 1000;
+      spawnT += dt;
+      if (spawnT >= interval) {
+        spawnT = 0;
+        const empty = holes.filter((h) => !h.mole);
+        if (empty.length) popUp(empty[Math.floor(Math.random() * empty.length)]);
+      }
+      for (const h of holes) {
+        if (h.mole) {
+          h.t -= dt;
+          if (h.t <= 0) hit(h, false); // retract (demo: shows a flash, no score)
+        }
+      }
+    };
+    app.ticker.add(tick);
+
+    return {
+      destroy() {
+        app.ticker.remove(tick);
+        holes.forEach((h) => { if (h.mole) { h.mole.destroy(); h.mole = null; } });
+      },
+    };
+  },
+};

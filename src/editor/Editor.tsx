@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useEditor } from '../store';
 import { NETWORKS, exportPlayable, downloadHtml } from '../export/exporter';
+import { getTemplate } from '../templates/catalog';
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -12,9 +13,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 export function Editor() {
-  const { config, set, restart } = useEditor();
+  const { config, set, restart, backToGallery } = useEditor();
   const [network, setNetwork] = useState('applovin');
   const [status, setStatus] = useState<string | null>(null);
+  const template = getTemplate(config.templateId);
 
   async function handleExport() {
     setStatus('Building bundle…');
@@ -35,8 +37,9 @@ export function Editor() {
 
   return (
     <div className="panel">
-      <h1>Playable Builder</h1>
-      <p className="sub">Customize the template — preview updates live.</p>
+      <button className="back" onClick={backToGallery}>← All templates</button>
+      <h1>{template.name}</h1>
+      <p className="sub">{template.genre} · customize it — preview updates live.</p>
 
       <Section title="Brand">
         <Field label="Game name">

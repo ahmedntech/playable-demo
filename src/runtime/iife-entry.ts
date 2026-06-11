@@ -1,14 +1,13 @@
-import { PlayableGame } from './game';
-import type { PlayableConfig } from './types';
-import type { StartOptions } from './game';
+import { Runner } from './runner';
+import type { PlayableConfig, RuntimeStartOptions } from './types';
 
 // Global entrypoint exposed by the IIFE build (public/runtime.iife.js).
-// Loaded by both the editor preview and the exported ad bundle.
+// Loaded by both the editor preview/gallery and the exported ad bundle.
 const api = {
-  start(config: PlayableConfig, mount: HTMLElement, opts?: StartOptions) {
-    const game = new PlayableGame();
-    void game.start(config, mount, opts);
-    return game;
+  start(config: PlayableConfig, mount: HTMLElement, opts?: RuntimeStartOptions) {
+    const runner = new Runner();
+    void runner.start(config, mount, opts);
+    return runner;
   },
 };
 
