@@ -35,6 +35,22 @@ export const TEMPLATES: TemplateMeta[] = [
     accent: '#28b6e8',
     bg: '#16314f', // night sky blue
   },
+  {
+    id: 'stack',
+    name: 'Tower Stack',
+    genre: 'Skill',
+    tagline: 'Time your taps to stack the tower high.',
+    accent: '#4f9dff',
+    bg: '#13294a', // deep blue
+  },
+  {
+    id: 'slice',
+    name: 'Slice It',
+    genre: 'Action',
+    tagline: 'Swipe to slice the fruit out of the air.',
+    accent: '#ff6b5e',
+    bg: '#2a1330', // dark plum
+  },
 ];
 
 export function getTemplate(id: string): TemplateMeta {

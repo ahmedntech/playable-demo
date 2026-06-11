@@ -4,7 +4,8 @@ A no-code playable-ad builder. Browse a **gallery of game templates** with live 
 previews, pick one, customize brand/gameplay/CTA in a live editor, and export a single
 self-contained, MRAID-compliant HTML ad.
 
-Templates ship today: **Tap Frenzy** (reflex), **Whack Attack** (arcade), **Catch Master** (casual).
+Templates ship today: **Tap Frenzy** (reflex), **Whack Attack** (arcade), **Catch Master** (casual),
+**Tower Stack** (skill), **Slice It** (action).
 
 ## The one idea that holds it together
 

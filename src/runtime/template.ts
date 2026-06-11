@@ -12,6 +12,7 @@ export interface GameCtx {
   H: number;
   demo: boolean; // true = auto-playing preview loop (no scoring/win)
   addScore: (n?: number) => void;
+  finish: () => void; // end the round now (e.g. on a miss) → end card; restarts in demo
 }
 
 export interface Controller {

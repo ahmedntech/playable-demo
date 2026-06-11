@@ -4,6 +4,8 @@ import type { Template, Controller, GameCtx } from './template';
 import { tapTargets } from './templates/tapTargets';
 import { whack } from './templates/whack';
 import { catchGame } from './templates/catch';
+import { stack } from './templates/stack';
+import { slice } from './templates/slice';
 import { lighten, darken } from './color';
 
 // Builds a vertical gradient texture from a base color so games have depth
@@ -30,6 +32,8 @@ const REGISTRY: Record<string, Template> = {
   'tap-targets': tapTargets,
   whack,
   catch: catchGame,
+  stack,
+  slice,
 };
 
 export class Runner {
@@ -156,8 +160,14 @@ export class Runner {
       H,
       demo: this.demo,
       addScore: (n = 1) => this.addScore(n),
+      finish: () => this.finish(),
     };
     this.controller = this.tpl.start(ctx);
+  }
+
+  private finish() {
+    if (this.demo) this.beginRound(); // restart the preview loop
+    else this.showEndCard();
   }
 
   private addScore(n: number) {
@@ -165,10 +175,10 @@ export class Runner {
     this.score += n;
     const target = this.cfg.gameplay.targetScore;
     if (this.hud) this.hud.text = `${Math.min(this.score, target)} / ${target}`;
-    if (this.score >= target) this.win();
+    if (this.score >= target) this.showEndCard();
   }
 
-  private win() {
+  private showEndCard() {
     this.clear();
     this.label('🎉', 64, '#ffffff', 200);
     this.label(this.cfg.endCard.headline, 24, '#ffffff', 300);
