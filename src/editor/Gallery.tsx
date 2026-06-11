@@ -28,9 +28,9 @@ function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void
     () => ({
       ...DEFAULT_CONFIG,
       templateId: meta.id,
-      brand: { ...DEFAULT_CONFIG.brand, primaryColor: meta.accent, bgColor: '#0e1320' },
+      brand: { ...DEFAULT_CONFIG.brand, primaryColor: meta.accent, bgColor: meta.bg },
     }),
-    [meta.id, meta.accent]
+    [meta.id, meta.accent, meta.bg]
   );
 
   return (

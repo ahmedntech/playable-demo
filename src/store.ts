@@ -27,7 +27,11 @@ export const useEditor = create<EditorState>((set) => ({
       const meta = getTemplate(id);
       return {
         view: 'editor',
-        config: { ...s.config, templateId: id, brand: { ...s.config.brand, primaryColor: meta.accent } },
+        config: {
+          ...s.config,
+          templateId: id,
+          brand: { ...s.config.brand, primaryColor: meta.accent, bgColor: meta.bg },
+        },
       };
     }),
   backToGallery: () => set({ view: 'gallery' }),

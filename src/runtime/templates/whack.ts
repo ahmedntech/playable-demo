@@ -1,5 +1,6 @@
 import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
+import { lighten, darken } from '../color';
 
 interface Hole { x: number; y: number; mole: Container | null; t: number }
 
@@ -11,13 +12,16 @@ export const whack: Template = {
     const { app, layer, config, W, demo } = ctx;
     const cols = 3, rows = 3, top = 170, gapY = 130, marginX = 56;
     const gapX = (W - 2 * marginX) / (cols - 1);
+    const bg = config.brand.bgColor;
     const holes: Hole[] = [];
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const x = marginX + c * gapX;
         const y = top + r * gapY;
-        layer.addChild(new Graphics().ellipse(x, y + 28, 42, 16).fill(0x000000));
+        // dirt mound rim (lighter) + recessed hole (darker than bg) for depth
+        layer.addChild(new Graphics().ellipse(x, y + 30, 48, 20).fill(lighten(bg, 0.12)));
+        layer.addChild(new Graphics().ellipse(x, y + 28, 40, 15).fill(darken(bg, 0.55)));
         holes.push({ x, y, mole: null, t: 0 });
       }
     }
@@ -26,10 +30,18 @@ export const whack: Template = {
     const interval = 1.0 - config.gameplay.difficulty * 0.13;
 
     function popUp(h: Hole) {
+      const p = config.brand.primaryColor;
       const m = new Container();
-      m.addChild(new Graphics().circle(0, 0, 32).fill(config.brand.primaryColor));
-      m.addChild(new Graphics().circle(-11, -7, 5).fill(0xffffff));
-      m.addChild(new Graphics().circle(11, -7, 5).fill(0xffffff));
+      m.addChild(new Graphics().circle(-19, -20, 9).fill(darken(p, 0.15))); // ears
+      m.addChild(new Graphics().circle(19, -20, 9).fill(darken(p, 0.15)));
+      m.addChild(new Graphics().circle(0, 2, 32).fill(darken(p, 0.18))); // lower body
+      m.addChild(new Graphics().circle(0, -2, 30).fill(p)); // face
+      m.addChild(new Graphics().circle(-9, -10, 12).fill({ color: lighten(p, 0.45), alpha: 0.45 })); // highlight
+      m.addChild(new Graphics().circle(-10, -4, 6).fill(0xffffff)); // eyes
+      m.addChild(new Graphics().circle(10, -4, 6).fill(0xffffff));
+      m.addChild(new Graphics().circle(-9, -3, 3).fill(0x14202a)); // pupils
+      m.addChild(new Graphics().circle(11, -3, 3).fill(0x14202a));
+      m.addChild(new Graphics().circle(0, 6, 4).fill(0x14202a)); // nose
       m.x = h.x;
       m.y = h.y;
       m.eventMode = 'static';

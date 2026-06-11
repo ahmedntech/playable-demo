@@ -6,7 +6,8 @@ export interface TemplateMeta {
   name: string;
   genre: string;
   tagline: string;
-  accent: string; // suggested primary color, also tints the gallery card
+  accent: string; // suggested primary color (game objects, buttons)
+  bg: string; // suggested game background (a gradient is derived from it)
 }
 
 export const TEMPLATES: TemplateMeta[] = [
@@ -16,6 +17,7 @@ export const TEMPLATES: TemplateMeta[] = [
     genre: 'Reflex',
     tagline: 'Tap the targets before they shrink away.',
     accent: '#ff4d6d',
+    bg: '#2a1f4a', // deep violet
   },
   {
     id: 'whack',
@@ -23,13 +25,15 @@ export const TEMPLATES: TemplateMeta[] = [
     genre: 'Arcade',
     tagline: 'Bonk the critters as they pop out of their holes.',
     accent: '#ffb020',
+    bg: '#1c4736', // forest green
   },
   {
     id: 'catch',
     name: 'Catch Master',
     genre: 'Casual',
     tagline: 'Slide the basket to catch the falling stars.',
-    accent: '#21c79a',
+    accent: '#28b6e8',
+    bg: '#16314f', // night sky blue
   },
 ];
 

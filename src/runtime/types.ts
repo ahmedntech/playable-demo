@@ -35,7 +35,7 @@ export const DEFAULT_CONFIG: PlayableConfig = {
     name: 'Your Game',
     logoDataUrl: null,
     primaryColor: '#ff4d6d',
-    bgColor: '#101426',
+    bgColor: '#2a1f4a',
   },
   cta: {
     text: 'Play Now',

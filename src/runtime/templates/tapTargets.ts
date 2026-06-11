@@ -1,5 +1,6 @@
 import { Container, Graphics, Ticker } from 'pixi.js';
 import type { Template } from '../template';
+import { lighten } from '../color';
 
 // Targets spawn at intervals and shrink. Tap one before it vanishes to score.
 // Demo mode auto-pops targets so the gallery preview looks alive.
@@ -13,9 +14,12 @@ export const tapTargets: Template = {
 
     function spawn() {
       const r = 34;
+      const primary = config.brand.primaryColor;
       const c = new Container();
-      c.addChild(new Graphics().circle(0, 0, r).fill(config.brand.primaryColor));
-      c.addChild(new Graphics().circle(0, 0, r).stroke({ width: 4, color: 0xffffff, alpha: 0.6 }));
+      c.addChild(new Graphics().ellipse(0, r * 0.7, r * 0.9, r * 0.32).fill({ color: 0x000000, alpha: 0.28 })); // shadow
+      c.addChild(new Graphics().circle(0, 0, r).fill(primary)); // body
+      c.addChild(new Graphics().circle(-r * 0.28, -r * 0.3, r * 0.5).fill({ color: lighten(primary, 0.5), alpha: 0.55 })); // highlight
+      c.addChild(new Graphics().circle(0, 0, r).stroke({ width: 3, color: 0xffffff, alpha: 0.9 })); // ring
       c.x = r + 20 + Math.random() * (W - 2 * r - 40);
       c.y = r + 90 + Math.random() * (H - 2 * r - 180);
       (c as any)._life = 2.2 - config.gameplay.difficulty * 0.24;

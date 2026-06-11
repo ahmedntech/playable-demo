@@ -1,9 +1,26 @@
-import { Application, Container, Graphics, Sprite, Text, Assets } from 'pixi.js';
+import { Application, Container, Graphics, Sprite, Text, Texture, Assets } from 'pixi.js';
 import type { PlayableConfig, RuntimeStartOptions } from './types';
 import type { Template, Controller, GameCtx } from './template';
 import { tapTargets } from './templates/tapTargets';
 import { whack } from './templates/whack';
 import { catchGame } from './templates/catch';
+import { lighten, darken } from './color';
+
+// Builds a vertical gradient texture from a base color so games have depth
+// instead of a flat black void. Robust across Pixi versions (uses a 2D canvas).
+function gradientTexture(base: string): Texture {
+  const c = document.createElement('canvas');
+  c.width = 4;
+  c.height = 256;
+  const ctx = c.getContext('2d')!;
+  const g = ctx.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, lighten(base, 0.32));
+  g.addColorStop(0.55, base);
+  g.addColorStop(1, darken(base, 0.22));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 4, 256);
+  return Texture.from(c);
+}
 
 const W = 360;
 const H = 640;
@@ -17,6 +34,7 @@ const REGISTRY: Record<string, Template> = {
 
 export class Runner {
   private app = new Application();
+  private bgLayer = new Container();
   private root = new Container();
   private layer = new Container();
   private cfg!: PlayableConfig;
@@ -45,7 +63,8 @@ export class Runner {
     const cv = this.app.canvas;
     Object.assign(cv.style, { maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' });
     mount.appendChild(cv);
-    this.app.stage.addChild(this.root);
+    this.drawBackdrop();
+    this.app.stage.addChild(this.bgLayer, this.root);
 
     if (this.demo) this.beginRound();
     else void this.showIntro();
@@ -56,6 +75,17 @@ export class Runner {
     this.controller?.destroy();
     this.app.ticker.stop();
     this.app.destroy(true, { children: true });
+  }
+
+  private drawBackdrop() {
+    const base = this.cfg.brand.bgColor;
+    const bg = new Sprite(gradientTexture(base));
+    bg.width = W;
+    bg.height = H;
+    this.bgLayer.addChild(bg);
+    // soft glow near the top for a bit of life
+    const glow = new Graphics().circle(W / 2, 80, 240).fill({ color: lighten(base, 0.6), alpha: 0.1 });
+    this.bgLayer.addChild(glow);
   }
 
   private clear() {
