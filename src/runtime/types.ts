@@ -32,6 +32,12 @@ export interface PlayableConfig {
 export interface RuntimeStartOptions {
   onCta?: (url: string) => void; // CTA handler (networks inject their own)
   demo?: boolean; // auto-playing loop for gallery previews (no win/end card)
+  // Edit mode: the demo keeps playing, but marked elements get glowing
+  // outlines + labels and taps are routed here instead of into the game.
+  // key is the element key, or 'background' for a tap on empty space.
+  editMode?: boolean;
+  onElementTap?: (key: string) => void;
+  elementLabels?: Record<string, string>; // key → display label for edit-mode tags
 }
 
 export const DEFAULT_CONFIG: PlayableConfig = {

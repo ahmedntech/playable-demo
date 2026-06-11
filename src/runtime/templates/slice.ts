@@ -11,7 +11,7 @@ export const slice: Template = {
   id: 'slice',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('fruitColor', config.brand.primaryColor);
+    const p = ctx.color('fruit', config.brand.primaryColor);
     const fruitTex = ctx.tex('fruit');
     const GRAV = 900;
     const fruits: Fruit[] = [];
@@ -37,6 +37,7 @@ export const slice: Template = {
       c.x = x;
       c.y = H + r;
       layer.addChild(c);
+      ctx.mark(c, 'fruit');
       fruits.push({ c, x, y: H + r, vx: (W / 2 - x) * 0.6 + (Math.random() - 0.5) * 80, vy: -(640 + Math.random() * 130), r });
     }
 

@@ -9,11 +9,15 @@ Tower Stack, Slice It, Tile Tap, Perfect Stop, Spin Wheel, Match Pairs, Bubble P
 Lane Dash, Tap & Fly, Knife Hit, Ball Drop, Cannon Pop, Tap Jump. Each has an interactive mode
 and an auto-playing demo loop used for the gallery previews.
 
-**Per-element customization.** Each template declares editable *slots* (in `catalog.ts`):
-upload an image to swap a game object (the basket, the bird, the critter…), set a background
-image, and recolor individual elements. The editor renders these controls automatically from
-the slot list; the runtime gives each game `ctx.tex(key)` / `ctx.color(key, fallback)` and
-falls back to the drawn shape when no image is provided.
+**Canvas edit mode.** Opening a template lands you in edit mode: the game keeps auto-playing
+while every editable element glows with a labeled tag. Tap the element itself (the basket,
+the bird, the critter…) to get a popover with just its controls — upload art to replace it,
+or recolor it. Tap empty space to edit the background (image or color).
+
+Under the hood each template declares its `elements` in `catalog.ts` and tags its display
+objects with `ctx.mark(obj, key)`; the runner outlines one representative instance per key
+each frame and hit-tests taps against all of them. Games read overrides via `ctx.tex(key)` /
+`ctx.color(key, fallback)` and fall back to the drawn shape when no image is provided.
 
 ## The one idea that holds it together
 

@@ -25,7 +25,6 @@ export default function App() {
           <Editor />
           <div className="stage-wrap">
             <Preview />
-            <p className="hint">Live preview · same runtime that ships in the export</p>
           </div>
         </div>
       )}

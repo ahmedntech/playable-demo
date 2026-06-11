@@ -12,7 +12,7 @@ export const jump: Template = {
   id: 'jump',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('heroColor', config.brand.primaryColor);
+    const p = ctx.color('hero', config.brand.primaryColor);
     const heroTex = ctx.tex('hero');
     const groundY = H * 0.72;
 
@@ -32,6 +32,7 @@ export const jump: Template = {
     let hy = 0, vy = 0; // hy = height above ground
     hero.position.set(heroX, groundY);
     layer.addChild(hero);
+    ctx.mark(hero, 'hero');
 
     const obs: Obstacle[] = [];
     let spawnT = 0;

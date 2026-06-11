@@ -9,7 +9,7 @@ export const bubblepop: Template = {
   id: 'bubblepop',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('bubbleColor', config.brand.primaryColor);
+    const p = ctx.color('bubble', config.brand.primaryColor);
     const cols = 6, rows = 7;
     const r = 24, gap = 4;
     const cellW = r * 2 + gap;
@@ -46,6 +46,7 @@ export const bubblepop: Template = {
       g.cursor = 'pointer';
       g.on('pointertap', () => popAt(col, row));
       layer.addChild(g);
+      ctx.mark(g, 'bubble');
       return g;
     }
 

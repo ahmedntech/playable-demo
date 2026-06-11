@@ -10,7 +10,7 @@ export const drop: Template = {
   id: 'drop',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('ballColor', config.brand.primaryColor);
+    const p = ctx.color('ball', config.brand.primaryColor);
     const ballTex = ctx.tex('ball');
     const pegTop = H * 0.22, pegRows = 6, pegGap = 46;
 
@@ -44,6 +44,7 @@ export const drop: Template = {
       }
       g.position.set(x, pegTop - 40);
       layer.addChild(g);
+      ctx.mark(g, 'ball');
       balls.push({ g, x, y: pegTop - 40, vx: 0, vy: 0, row: 0 });
     }
 

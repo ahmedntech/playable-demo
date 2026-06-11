@@ -8,7 +8,7 @@ export const paint: Template = {
   id: 'paint',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('fillColor', config.brand.primaryColor);
+    const p = ctx.color('paint', config.brand.primaryColor);
     const cols = 5, rows = 6;
     const cell = 54, gap = 6;
     const ox = (W - cols * (cell + gap) + gap) / 2;
@@ -44,6 +44,7 @@ export const paint: Template = {
         g.cursor = 'pointer';
         g.on('pointertap', () => fill(idx));
         layer.addChild(g);
+        ctx.mark(g, 'paint');
         cells.push({ g, filled: false });
       }
     }

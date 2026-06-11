@@ -14,7 +14,7 @@ export const cannon: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
     const p = config.brand.primaryColor;
-    const targetCol = ctx.color('targetColor', p);
+    const targetCol = ctx.color('target', p);
     const targetTex = ctx.tex('target');
     const ox = W / 2, oy = H - 70;
 
@@ -45,6 +45,7 @@ export const cannon: Template = {
       const fromLeft = Math.random() < 0.5;
       g.position.set(fromLeft ? -20 : W + 20, y);
       layer.addChild(g);
+      ctx.mark(g, 'target');
       targets.push({ g, x: g.x, y, vx: (fromLeft ? 1 : -1) * (50 + config.gameplay.difficulty * 18) });
     }
 

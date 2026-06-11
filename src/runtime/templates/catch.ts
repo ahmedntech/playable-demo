@@ -10,7 +10,7 @@ export const catchGame: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
 
-    const p = ctx.color('basketColor', config.brand.primaryColor);
+    const p = ctx.color('basket', config.brand.primaryColor);
     const basketTex = ctx.tex('basket');
     const starTex = ctx.tex('star');
     const paddle = new Container();
@@ -24,6 +24,7 @@ export const catchGame: Template = {
     paddle.x = W / 2;
     paddle.y = H - 96;
     layer.addChild(paddle);
+    ctx.mark(paddle, 'basket');
 
     let targetX = W / 2;
     const onMove = (e: FederatedPointerEvent) => { targetX = e.global.x; };
@@ -51,6 +52,7 @@ export const catchGame: Template = {
       it.y = -20;
       (it as any)._v = 130 + config.gameplay.difficulty * 32;
       layer.addChild(it);
+      ctx.mark(it, 'star');
       items.push(it);
     }
 

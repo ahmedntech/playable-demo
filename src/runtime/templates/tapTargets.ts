@@ -13,7 +13,7 @@ export const tapTargets: Template = {
     let spawnT = 0;
     const interval = 1.2 - config.gameplay.difficulty * 0.17;
 
-    const primary = ctx.color('targetColor', config.brand.primaryColor);
+    const primary = ctx.color('target', config.brand.primaryColor);
     const tex = ctx.tex('target');
 
     function spawn() {
@@ -35,6 +35,7 @@ export const tapTargets: Template = {
       c.cursor = 'pointer';
       c.on('pointertap', () => pop(c, true));
       layer.addChild(c);
+      ctx.mark(c, 'target');
       targets.push(c);
     }
 

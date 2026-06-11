@@ -41,7 +41,7 @@ export const memory: Template = {
           c.x = x; c.y = y;
           const face = new Graphics().roundRect(0, 0, cw, ch, 10).fill(faceColors[values[k] % faceColors.length]);
           face.visible = false;
-          const cover = new Graphics().roundRect(0, 0, cw, ch, 10).fill(ctx.color('cardColor', darken(config.brand.bgColor, 0.3)));
+          const cover = new Graphics().roundRect(0, 0, cw, ch, 10).fill(ctx.color('card', darken(config.brand.bgColor, 0.3)));
           cover.roundRect(0, 0, cw, ch, 10).stroke({ width: 2, color: lighten(p, 0.2), alpha: 0.6 });
           c.addChild(face, cover);
           const card: Card = { c, cover, face, value: values[k], up: false, matched: false };
@@ -49,6 +49,7 @@ export const memory: Template = {
           c.cursor = 'pointer';
           c.on('pointertap', () => flip(card));
           layer.addChild(c);
+          ctx.mark(c, 'card');
           cards.push(card);
           k++;
         }

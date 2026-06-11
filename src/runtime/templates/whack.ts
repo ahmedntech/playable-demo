@@ -30,7 +30,7 @@ export const whack: Template = {
     let spawnT = 0;
     const interval = 1.0 - config.gameplay.difficulty * 0.13;
 
-    const p = ctx.color('moleColor', config.brand.primaryColor);
+    const p = ctx.color('mole', config.brand.primaryColor);
     const moleTex = ctx.tex('mole');
 
     function popUp(h: Hole) {
@@ -55,6 +55,7 @@ export const whack: Template = {
       m.cursor = 'pointer';
       m.on('pointertap', () => { if (h.mole === m) hit(h, true); });
       layer.addChild(m);
+      ctx.mark(m, 'mole');
       h.mole = m;
       h.t = demo ? 0.4 + Math.random() * 0.5 : 1.5 - config.gameplay.difficulty * 0.18;
     }

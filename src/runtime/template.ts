@@ -13,9 +13,12 @@ export interface GameCtx {
   demo: boolean; // true = auto-playing preview loop (no scoring/win)
   addScore: (n?: number) => void;
   finish: () => void; // end the round now (e.g. on a miss) → end card; restarts in demo
-  // Per-element customization (see TemplateMeta.slots):
+  // Per-element customization (see TemplateMeta.elements):
   color: (key: string, fallback: string) => string; // user color override or fallback
   tex: (key: string) => Texture | null; // user-uploaded image as a preloaded texture, or null
+  // Tag a display object as an editable element. In edit mode the runner
+  // outlines marked objects each frame and routes taps on them to the editor.
+  mark: (obj: Container, key: string) => void;
 }
 
 export interface Controller {

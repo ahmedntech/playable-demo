@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Sprite, Text, Texture, Assets } from 'pixi.js';
+import { Application, Container, Graphics, Rectangle, Sprite, Text, Texture, Assets } from 'pixi.js';
 import { coverSprite } from './assets';
 import type { PlayableConfig, RuntimeStartOptions } from './types';
 import type { Template, Controller, GameCtx } from './template';
@@ -75,11 +75,23 @@ export class Runner {
   private controller?: Controller;
   private textures = new Map<string, Texture>(); // preloaded per-element images
   private bgTex: Texture | null = null;
+  // --- edit mode state ---
+  private editMode = false;
+  private onElementTap?: (key: string) => void;
+  private elementLabels: Record<string, string> = {};
+  private marked: { obj: Container; key: string }[] = [];
+  private editOverlay = new Container();
+  private outlineGfx = new Graphics();
+  private labelPills = new Map<string, Container>();
+  private editTime = 0;
 
   async start(config: PlayableConfig, mount: HTMLElement, opts: RuntimeStartOptions = {}) {
     this.cfg = config;
-    this.demo = !!opts.demo;
+    this.editMode = !!opts.editMode;
+    this.demo = !!opts.demo || this.editMode; // edit mode rides on the auto-play loop
     this.onCta = opts.onCta ?? ((url) => window.open(url, '_blank'));
+    this.onElementTap = opts.onElementTap;
+    this.elementLabels = opts.elementLabels ?? {};
     this.tpl = REGISTRY[config.templateId] ?? tapTargets;
 
     await this.app.init({
@@ -98,6 +110,7 @@ export class Runner {
     mount.appendChild(cv);
     this.drawBackdrop();
     this.app.stage.addChild(this.bgLayer, this.root);
+    if (this.editMode) this.enterEditMode();
 
     if (this.demo) this.beginRound();
     else void this.showIntro();
@@ -108,6 +121,85 @@ export class Runner {
     this.controller?.destroy();
     this.app.ticker.stop();
     this.app.destroy(true, { children: true });
+  }
+
+  // ---------- edit mode ----------
+  // The demo keeps playing underneath; we outline one representative instance
+  // of each marked element (pulsing, labeled) and route taps: a tap on any
+  // marked instance reports its key, a tap on empty space reports 'background'.
+  private enterEditMode() {
+    this.editOverlay.addChild(this.outlineGfx);
+    this.app.stage.addChild(this.editOverlay);
+    // Children must not swallow taps (e.g. tap-targets pop on tap).
+    this.root.interactiveChildren = false;
+    this.app.stage.eventMode = 'static';
+    this.app.stage.hitArea = new Rectangle(0, 0, W, H);
+    this.app.stage.on('pointertap', (e) => {
+      const pt = e.global;
+      let best: { key: string; area: number } | null = null;
+      for (const m of this.liveMarked()) {
+        const b = m.obj.getBounds();
+        const pad = 10;
+        if (pt.x >= b.x - pad && pt.x <= b.x + b.width + pad && pt.y >= b.y - pad && pt.y <= b.y + b.height + pad) {
+          const area = Math.max(1, b.width * b.height);
+          if (!best || area < best.area) best = { key: m.key, area }; // most specific wins
+        }
+      }
+      this.onElementTap?.(best ? best.key : 'background');
+    });
+    this.app.ticker.add(this.editTick);
+  }
+
+  private liveMarked() {
+    this.marked = this.marked.filter((m) => !m.obj.destroyed && m.obj.parent);
+    return this.marked;
+  }
+
+  private editTick = () => {
+    this.editTime += this.app.ticker.deltaMS / 1000;
+    const pulse = 0.55 + 0.45 * Math.sin(this.editTime * 4);
+    const g = this.outlineGfx;
+    g.clear();
+
+    // pick one representative per key: the instance nearest the canvas center
+    const reps = new Map<string, Container>();
+    for (const m of this.liveMarked()) {
+      const b = m.obj.getBounds();
+      const d = Math.hypot(b.x + b.width / 2 - W / 2, b.y + b.height / 2 - H / 2);
+      const cur = reps.get(m.key);
+      if (!cur) { reps.set(m.key, m.obj); (m.obj as any).__d = d; continue; }
+      if (d < ((cur as any).__d ?? Infinity)) { reps.set(m.key, m.obj); (m.obj as any).__d = d; }
+    }
+
+    const seen = new Set<string>();
+    for (const [key, obj] of reps) {
+      seen.add(key);
+      const b = obj.getBounds();
+      const pad = 7;
+      const x = b.x - pad, y = b.y - pad, w = b.width + pad * 2, h = b.height + pad * 2;
+      g.roundRect(x, y, w, h, 10).stroke({ width: 6, color: 0xfcb514, alpha: 0.22 * pulse });
+      g.roundRect(x, y, w, h, 10).stroke({ width: 2, color: 0xffffff, alpha: 0.5 + 0.5 * pulse });
+      const pill = this.pill(key);
+      pill.visible = true;
+      pill.x = Math.max(4, Math.min(W - pill.width - 4, x + w / 2 - pill.width / 2));
+      pill.y = y - 26 < 4 ? y + h + 6 : y - 26;
+    }
+    for (const [key, pill] of this.labelPills) if (!seen.has(key)) pill.visible = false;
+  };
+
+  private pill(key: string): Container {
+    let p = this.labelPills.get(key);
+    if (p) return p;
+    p = new Container();
+    const label = this.elementLabels[key] ?? key;
+    const t = new Text({ text: '✎ ' + label, style: { fontFamily: 'Arial', fontSize: 12, fill: 0x1d2a31, fontWeight: 'bold' } });
+    const bgr = new Graphics().roundRect(0, 0, t.width + 16, 20, 10).fill({ color: 0xfcb514, alpha: 0.95 });
+    t.x = 8;
+    t.y = 3;
+    p.addChild(bgr, t);
+    this.editOverlay.addChild(p);
+    this.labelPills.set(key, p);
+    return p;
   }
 
   // Loads every uploaded image (per-element slots + background) into textures.
@@ -153,6 +245,7 @@ export class Runner {
     this.controller = undefined;
     this.root.removeChildren();
     this.hud = undefined;
+    this.marked = [];
   }
 
   private label(text: string, size: number, color: string, y: number) {
@@ -219,6 +312,7 @@ export class Runner {
       finish: () => this.finish(),
       color: (key, fallback) => this.cfg.colors?.[key] || fallback,
       tex: (key) => this.textures.get(key) ?? null,
+      mark: (obj, key) => { if (this.editMode) this.marked.push({ obj, key }); },
     };
     this.controller = this.tpl.start(ctx);
   }

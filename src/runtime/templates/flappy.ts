@@ -12,9 +12,9 @@ export const flappy: Template = {
   id: 'flappy',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('birdColor', config.brand.primaryColor);
+    const p = ctx.color('bird', config.brand.primaryColor);
     const birdTex = ctx.tex('bird');
-    const pipeCol = ctx.color('pipeColor', darken(config.brand.primaryColor, 0.2));
+    const pipeCol = ctx.color('pipe', darken(config.brand.primaryColor, 0.2));
     const birdX = W * 0.3;
     const pipeW = 56;
     const gapH = 180 - config.gameplay.difficulty * 12;
@@ -31,6 +31,7 @@ export const flappy: Template = {
     let by = H / 2, vy = 0;
     bird.position.set(birdX, by);
     layer.addChild(bird);
+    ctx.mark(bird, 'bird');
 
     const pipes: Pipe[] = [];
     let spawnT = 1.2;
@@ -43,6 +44,7 @@ export const flappy: Template = {
       c.addChild(new Graphics().rect(0, 0, pipeW, gapY).stroke({ width: 2, color: lighten(pipeCol, 0.3), alpha: 0.5 }));
       c.x = W + 10;
       layer.addChild(c);
+      ctx.mark(c, 'pipe');
       pipes.push({ c, gapY, gapH, passed: false });
     }
 

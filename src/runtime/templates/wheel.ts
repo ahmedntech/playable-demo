@@ -9,7 +9,7 @@ export const wheel: Template = {
   id: 'wheel',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('wheelColor', config.brand.primaryColor);
+    const p = ctx.color('wheel', config.brand.primaryColor);
     const cx = W / 2, cy = H * 0.46, R = 124;
     const segs = 6;
     const palette = [p, lighten(p, 0.25), darken(p, 0.18), lighten(p, 0.45), darken(p, 0.32), lighten(p, 0.1)];
@@ -25,6 +25,7 @@ export const wheel: Template = {
     }
     w.addChild(new Graphics().circle(0, 0, 22).fill(lighten(p, 0.5)));
     layer.addChild(w);
+    ctx.mark(w, 'wheel');
     // fixed pointer at the top
     layer.addChild(new Graphics().poly([cx - 14, cy - R - 6, cx + 14, cy - R - 6, cx, cy - R + 18]).fill(0xffffff));
 

@@ -11,7 +11,7 @@ export const knife: Template = {
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
     const p = config.brand.primaryColor;
-    const logCol = ctx.color('logColor', darken(p, 0.25));
+    const logCol = ctx.color('log', darken(p, 0.25));
     const knifeTex = ctx.tex('knife');
     const cx = W / 2, cy = H * 0.4, R = 96;
 
@@ -21,6 +21,7 @@ export const knife: Template = {
     log.addChild(new Graphics().circle(0, 0, R * 0.6).stroke({ width: 6, color: darken(logCol, 0.25), alpha: 0.6 }));
     log.addChild(new Graphics().circle(0, 0, 14).fill(lighten(logCol, 0.35)));
     layer.addChild(log);
+    ctx.mark(log, 'log');
 
     const stuck: number[] = []; // angles (radians, in log space) of stuck knives
     const spin = 1.4 + config.gameplay.difficulty * 0.25;
@@ -56,6 +57,7 @@ export const knife: Template = {
       kk.position.set(0, -R - 2);
       holder.addChild(kk);
       log.addChild(holder);
+      ctx.mark(holder, 'knife');
       g.destroy();
       ctx.addScore();
       ringFlash(app, layer, cx + Math.cos(ang) * R, cy + Math.sin(ang) * R, lighten(p, 0.4), 16);
@@ -72,6 +74,7 @@ export const knife: Template = {
       const g = makeKnife();
       g.position.set(cx, H - 60);
       layer.addChild(g);
+      ctx.mark(g, 'knife');
       flying = { g, y: H - 60 };
     }
     const onTap = () => throwKnife();

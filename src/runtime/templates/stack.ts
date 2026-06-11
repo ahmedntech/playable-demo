@@ -9,7 +9,7 @@ export const stack: Template = {
   id: 'stack',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('blockColor', config.brand.primaryColor);
+    const p = ctx.color('block', config.brand.primaryColor);
     const BH = 32; // block height
     const dropY = H * 0.30; // where the tower's top block rests
 
@@ -46,6 +46,7 @@ export const stack: Template = {
       active = makeBlock(activeLeft, activeWidth, placed.length);
       active.y = dropY - BH - 6;
       layer.addChild(active);
+      ctx.mark(active, 'block');
     }
 
     function init() {

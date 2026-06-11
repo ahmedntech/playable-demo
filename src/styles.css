@@ -73,10 +73,32 @@ button.primary:hover { filter: brightness(1.07); border-color: var(--gold); }
 .link-btn { background: none; border: none; color: var(--muted); padding: 2px 0 10px; font-size: 12px; cursor: pointer; text-align: left; }
 .link-btn:hover { color: var(--accent); border-color: transparent; }
 
-.stage-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; }
-.hint { color: var(--muted); font-size: 12px; }
+.stage-wrap { display: flex; align-items: center; justify-content: center; padding: 24px; }
+.hint { color: var(--muted); font-size: 12px; text-align: center; max-width: 360px; }
 
-.phone { width: 360px; height: 640px; border-radius: 28px; border: 8px solid #000; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5); background: #000; }
+.preview-area { display: flex; align-items: center; gap: 20px; }
+.phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+.phone { width: 360px; height: 640px; border-radius: 28px; border: 8px solid #000; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5); background: #000; transition: box-shadow .25s; }
+.phone.editing { box-shadow: 0 0 0 3px var(--gold), 0 30px 80px rgba(0,0,0,.5); }
 .phone-screen { width: 100%; height: 100%; }
+
+.edit-toggle { font-weight: 700; padding: 10px 22px; border-radius: 999px; }
+.edit-toggle.on { background: var(--gold); color: #1d2a31; border-color: var(--gold); }
+
+/* contextual popover for the tapped element */
+.popover { width: 230px; background: var(--panel); border: 1px solid var(--gold); border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 50px rgba(0,0,0,.45); animation: pop-in .15s ease-out; }
+@keyframes pop-in { from { opacity: 0; transform: translateX(-6px) scale(.97); } to { opacity: 1; transform: none; } }
+.popover-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.popover-head h3 { margin: 0; font-size: 15px; }
+.popover-head .close { background: none; border: none; color: var(--muted); padding: 2px 6px; font-size: 14px; }
+.popover-head .close:hover { color: var(--text); }
+.popover-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font-size: 13px; }
+.popover-row > span { color: var(--muted); }
+.popover-row input[type="color"] { width: 48px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: none; }
+.popover-row input[type="file"] { font-size: 12px; }
+
+.aside { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+.aside strong { color: var(--gold); }
 .runtime-mount { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .runtime-error { color: #ff8090; font-size: 12px; padding: 12px; text-align: center; }

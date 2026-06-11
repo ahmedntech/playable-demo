@@ -12,12 +12,16 @@ interface EditorState {
   view: View;
   config: PlayableConfig;
   previewKey: number; // bump to force the preview to remount (replay)
+  editMode: boolean; // canvas edit mode: tap elements in the preview to edit them
+  activeElement: string | null; // element key being edited ('background' for bg), null = none
   chooseTemplate: (id: string) => void;
   backToGallery: () => void;
   set: <K extends SectionKey>(section: K, patch: Partial<PlayableConfig[K]>) => void;
   setImage: (key: string, dataUrl: string | null) => void; // per-element image (null clears)
   setColor: (key: string, hex: string) => void; // per-element color
   setBgImage: (dataUrl: string | null) => void; // global background image
+  toggleEditMode: () => void;
+  setActiveElement: (key: string | null) => void;
   restart: () => void;
 }
 
@@ -25,12 +29,16 @@ export const useEditor = create<EditorState>((set) => ({
   view: 'gallery',
   config: structuredClone(DEFAULT_CONFIG),
   previewKey: 0,
+  editMode: false,
+  activeElement: null,
   chooseTemplate: (id) =>
     set((s) => {
       const meta = getTemplate(id);
-      // Slots differ per template, so reset per-element overrides on switch.
+      // Elements differ per template, so reset per-element overrides on switch.
       return {
         view: 'editor',
+        editMode: true, // land straight in edit mode — tap things to restyle them
+        activeElement: null,
         config: {
           ...s.config,
           templateId: id,
@@ -40,7 +48,9 @@ export const useEditor = create<EditorState>((set) => ({
         },
       };
     }),
-  backToGallery: () => set({ view: 'gallery' }),
+  backToGallery: () => set({ view: 'gallery', editMode: false, activeElement: null }),
+  toggleEditMode: () => set((s) => ({ editMode: !s.editMode, activeElement: null })),
+  setActiveElement: (key) => set({ activeElement: key }),
   set: (section, patch) =>
     set((s) => ({ config: { ...s.config, [section]: { ...s.config[section], ...patch } } })),
   setImage: (key, dataUrl) =>

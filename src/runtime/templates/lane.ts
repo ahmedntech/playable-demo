@@ -12,7 +12,7 @@ export const lane: Template = {
   id: 'lane',
   start(ctx) {
     const { app, layer, config, W, H, demo } = ctx;
-    const p = ctx.color('heroColor', config.brand.primaryColor);
+    const p = ctx.color('hero', config.brand.primaryColor);
     const heroTex = ctx.tex('hero');
     const coinTex = ctx.tex('coin');
     const lanes = [W * 0.25, W * 0.5, W * 0.75];
@@ -33,6 +33,7 @@ export const lane: Template = {
     let heroLane = 1;
     hero.position.set(lanes[heroLane], heroY);
     layer.addChild(hero);
+    ctx.mark(hero, 'hero');
 
     const ents: Entity[] = [];
     let spawnT = 0;
@@ -56,6 +57,7 @@ export const lane: Template = {
       }
       c.position.set(lanes[laneIdx], -30);
       layer.addChild(c);
+      if (coin) ctx.mark(c, 'coin');
       ents.push({ c, lane: laneIdx, coin });
     }
 

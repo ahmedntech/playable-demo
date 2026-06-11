@@ -14,7 +14,7 @@ export const piano: Template = {
     const cw = W / cols;
     const tw = cw - 10;
     const th = 96;
-    const tile = ctx.color('tileColor', darken(config.brand.bgColor, 0.4));
+    const tile = ctx.color('tile', darken(config.brand.bgColor, 0.4));
     const tileTex = ctx.tex('tile');
 
     for (let i = 1; i < cols; i++) {
@@ -45,6 +45,7 @@ export const piano: Template = {
       t.cursor = 'pointer';
       t.on('pointertap', () => pop(t, true));
       layer.addChild(t);
+      ctx.mark(t, 'tile');
       tiles.push(t);
     }
 
