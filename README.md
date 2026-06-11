@@ -28,6 +28,13 @@ intro's start button pulses.
 refresh and you land back in the editor where you left off. “Start over” in the Export
 section clears it.
 
+**AI art (nano-banana).** Every image-capable element (and the background) has a
+“✨ Generate with AI” panel: a prompt pre-seeded from the element, rendered by Google's
+Gemini image model. Sprites are requested on a solid backdrop and **chroma-keyed to
+transparency client-side** (corner-sampled, feathered, de-spilled) so they drop cleanly
+into the game. Bring your own free API key from aistudio.google.com — it stays in your
+browser; calls go directly to Google.
+
 Under the hood each template declares its `elements` in `catalog.ts` and tags its display
 objects with `ctx.mark(obj, key)`; the runner outlines one representative instance per key
 each frame and hit-tests taps against all of them. Games read overrides via `ctx.tex(key)` /

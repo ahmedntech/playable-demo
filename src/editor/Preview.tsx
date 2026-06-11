@@ -3,6 +3,7 @@ import { useEditor } from '../store';
 import { RuntimeMount } from '../components/RuntimeMount';
 import { getTemplate, type ElementDef } from '../templates/catalog';
 import { TEXT_FONTS } from '../runtime/types';
+import { AIGenerate } from './AIGenerate';
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -177,6 +178,15 @@ function ElementPopover({ elementKey, def, onClose }: { elementKey: string; def:
               ✕ Remove image
             </button>
           )}
+          <AIGenerate
+            subject={title}
+            gameName={config.brand.name}
+            isBackground={isBg}
+            onApply={(url) => {
+              if (isBg) setBgImage(url);
+              else setImage(elementKey, url);
+            }}
+          />
         </div>
       )}
 
