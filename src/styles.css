@@ -1,11 +1,13 @@
 :root {
-  --bg: #0b0e17;
-  --panel: #151a28;
-  --line: #232a3d;
-  --text: #e6e9f2;
-  --muted: #8b93a7;
-  --accent: #5b8cff;
-  --wolf: #8a7bff;
+  /* bigwolf brand: deep teal + gold (from bigwolf.com) */
+  --teal: #1d4354;
+  --gold: #fcb514;
+  --bg: #0b1418;
+  --panel: #102029;
+  --line: #1e3947;
+  --text: #eef2f4;
+  --muted: #8aa0aa;
+  --accent: #fcb514; /* interactive accents use brand gold */
 }
 * { box-sizing: border-box; }
 body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); }
@@ -16,18 +18,17 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background:
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 22px; border-bottom: 1px solid var(--line);
-  background: linear-gradient(90deg, rgba(138,123,255,.12), rgba(91,140,255,.04));
+  background: linear-gradient(90deg, var(--teal), rgba(29,67,84,.25));
 }
-.brand { display: flex; align-items: center; gap: 10px; }
-.wordmark { font-size: 20px; letter-spacing: -.02em; color: var(--text); }
-.wordmark strong { color: var(--wolf); font-weight: 800; }
-.brand .divider { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
-.product { font-size: 14px; color: var(--muted); font-weight: 600; }
-.topbar .tag { font-size: 12px; color: var(--muted); }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .logo { color: var(--gold); display: block; }
+.brand .divider { width: 1px; height: 22px; background: rgba(255,255,255,.18); margin: 0 2px; }
+.product { font-size: 14px; color: #cfe0e6; font-weight: 600; }
+.topbar .tag { font-size: 12px; color: #aac3cc; }
 
-.footer { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 8px;
+.footer { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px;
   padding: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-.footer strong { color: var(--wolf); }
+.footer .logo { color: var(--gold); }
 
 /* ---- gallery ---- */
 .gallery { padding: 32px 28px 48px; }
@@ -37,7 +38,7 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background:
 
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
   transition: transform .15s, border-color .15s; }
-.card:hover { transform: translateY(-3px); border-color: var(--wolf); }
+.card:hover { transform: translateY(-3px); border-color: var(--gold); }
 .card-preview { position: relative; aspect-ratio: 9 / 13; background: #0e1320; border-bottom: 3px solid;
   display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .card-preview .genre { position: absolute; top: 10px; left: 10px; font-size: 11px; font-weight: 700;
@@ -66,7 +67,8 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background:
 .row { display: flex; gap: 10px; }
 button { background: #222a3d; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; cursor: pointer; }
 button:hover { border-color: var(--accent); }
-button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; width: 100%; }
+button.primary { background: var(--gold); border-color: var(--gold); color: #1d2a31; font-weight: 700; width: 100%; }
+button.primary:hover { filter: brightness(1.07); border-color: var(--gold); }
 .status { font-size: 13px; margin-top: 12px; }
 
 .stage-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; }
