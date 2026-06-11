@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useEditor } from '../store';
 import { RuntimeMount } from '../components/RuntimeMount';
 import { getTemplate, type ElementDef } from '../templates/catalog';
+import { TEXT_FONTS } from '../runtime/types';
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -121,6 +122,18 @@ function ElementPopover({ elementKey, def, onClose }: { elementKey: string; def:
           <div className="popover-row">
             <span>Text</span>
             <input value={text.content} onChange={(e) => updateText(text.id, { content: e.target.value })} />
+          </div>
+          <div className="popover-row">
+            <span>Font</span>
+            <select
+              value={text.font ?? 'Arial'}
+              style={{ fontFamily: text.font ?? 'Arial' }}
+              onChange={(e) => updateText(text.id, { font: e.target.value })}
+            >
+              {TEXT_FONTS.map((f) => (
+                <option key={f} value={f} style={{ fontFamily: f }}>{f}</option>
+              ))}
+            </select>
           </div>
           <div className="popover-row">
             <span>Size: {text.size}px</span>

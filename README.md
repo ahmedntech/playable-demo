@@ -21,7 +21,12 @@ and color in the popover, and **drag it on the phone** to place it. Text edits l
 the running game (no remount), and overlays ship inside the exported ad.
 
 **End-card juice.** Confetti rain, a pulsing CTA, the brand logo above the headline, and
-a score-counter pop on every point.
+a score-counter pop on every point. Backdrops carry ambient drifting particles, and the
+intro's start button pulses.
+
+**Autosave.** The whole project (template, art, colors, texts) persists to localStorage —
+refresh and you land back in the editor where you left off. “Start over” in the Export
+section clears it.
 
 Under the hood each template declares its `elements` in `catalog.ts` and tags its display
 objects with `ctx.mark(obj, key)`; the runner outlines one representative instance per key

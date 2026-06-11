@@ -7,7 +7,12 @@ export interface TextOverlay {
   y: number; // 0..1 of height
   size: number; // font size at design resolution
   color: string;
+  font?: string; // web-safe family; defaults to Arial
 }
+
+// Web-safe font presets offered for text overlays (safe inside ad iframes —
+// no webfont loading allowed in most networks).
+export const TEXT_FONTS = ['Arial', 'Arial Black', 'Georgia', 'Impact', 'Courier New', 'Trebuchet MS'] as const;
 
 // The single source of truth for a playable. The editor mutates this object,
 // the runtime renders from it, and the exporter freezes it into the bundle.

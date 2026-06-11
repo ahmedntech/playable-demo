@@ -161,7 +161,7 @@ export class Runner {
       const t = new Text({
         text: tx.content,
         style: {
-          fontFamily: 'Arial',
+          fontFamily: tx.font || 'Arial',
           fontSize: tx.size,
           fill: tx.color,
           fontWeight: 'bold',
@@ -338,15 +338,58 @@ export class Runner {
       this.bgLayer.addChild(coverSprite(this.bgTex, W, H));
       // subtle darken so game objects stay legible over any photo
       this.bgLayer.addChild(new Graphics().rect(0, 0, W, H).fill({ color: 0x000000, alpha: 0.18 }));
-      return;
+    } else {
+      const bg = new Sprite(gradientTexture(base));
+      bg.width = W;
+      bg.height = H;
+      this.bgLayer.addChild(bg);
+      // soft glow near the top for a bit of life
+      const glow = new Graphics().circle(W / 2, 80, 240).fill({ color: lighten(base, 0.6), alpha: 0.1 });
+      this.bgLayer.addChild(glow);
     }
-    const bg = new Sprite(gradientTexture(base));
-    bg.width = W;
-    bg.height = H;
-    this.bgLayer.addChild(bg);
-    // soft glow near the top for a bit of life
-    const glow = new Graphics().circle(W / 2, 80, 240).fill({ color: lighten(base, 0.6), alpha: 0.1 });
-    this.bgLayer.addChild(glow);
+    this.ambientParticles(base);
+  }
+
+  // Soft dust motes drifting upward — gives every game a living backdrop.
+  private ambientParticles(base: string) {
+    const cont = new Container();
+    this.bgLayer.addChild(cont);
+    interface Mote { g: Graphics; v: number; sway: number; phase: number }
+    const motes: Mote[] = [];
+    for (let i = 0; i < 14; i++) {
+      const r = 1.5 + Math.random() * 2.5;
+      const g = new Graphics().circle(0, 0, r).fill({ color: lighten(base, 0.7), alpha: 0.1 + Math.random() * 0.15 });
+      g.x = Math.random() * W;
+      g.y = Math.random() * H;
+      cont.addChild(g);
+      motes.push({ g, v: 8 + Math.random() * 14, sway: 6 + Math.random() * 10, phase: Math.random() * Math.PI * 2 });
+    }
+    let t = 0;
+    const cb = () => {
+      if (cont.destroyed) { this.app.ticker.remove(cb); return; }
+      const dt = this.app.ticker.deltaMS / 1000;
+      t += dt;
+      for (const m of motes) {
+        m.g.y -= m.v * dt;
+        m.g.x += Math.sin(t + m.phase) * m.sway * dt;
+        if (m.g.y < -6) { m.g.y = H + 6; m.g.x = Math.random() * W; }
+      }
+    };
+    this.app.ticker.add(cb);
+  }
+
+  // Gentle scale pulse for tappable buttons (intro start, end-card CTA).
+  private pulseButton(btn: Container) {
+    btn.pivot.set(120, 28);
+    btn.x = W / 2;
+    btn.y += 28;
+    let t = 0;
+    const cb = () => {
+      if (btn.destroyed) { this.app.ticker.remove(cb); return; }
+      t += this.app.ticker.deltaMS / 1000;
+      btn.scale.set(1 + 0.04 * Math.sin(t * 4.5));
+    };
+    this.app.ticker.add(cb);
   }
 
   private clear() {
@@ -403,7 +446,7 @@ export class Runner {
     }
     this.label(this.cfg.brand.name, 30, '#ffffff', 320);
     this.label(`Score ${this.cfg.gameplay.targetScore} to win!`, 18, '#aab', 360);
-    this.button('Tap to start', 440, () => this.beginRound());
+    this.pulseButton(this.button('Tap to start', 412, () => this.beginRound()));
   }
 
   private beginRound() {

@@ -13,7 +13,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 export function Editor() {
-  const { config, set, restart, backToGallery } = useEditor();
+  const { config, set, restart, backToGallery, resetProject } = useEditor();
   const [network, setNetwork] = useState('applovin');
   const [status, setStatus] = useState<string | null>(null);
   const template = getTemplate(config.templateId);
@@ -103,6 +103,7 @@ export function Editor() {
           <button className="primary" onClick={handleExport}>⬇ Export ad</button>
         </div>
         {status && <p className="status">{status}</p>}
+        <p className="aside autosave">Autosaved locally · <button className="link-btn inline" onClick={() => { if (confirm('Discard this project and start fresh?')) resetProject(); }}>start over</button></p>
       </Section>
     </div>
   );
