@@ -14,7 +14,9 @@ speed for ~2s so the scene populates, then eases into **slow motion** so moving 
 are easy to tap. Every editable element glows with a labeled tag — tap the element itself
 (the basket, the bird, the critter…) to get a popover with just its controls — upload art
 to replace it, or recolor it. Tap empty space to edit the background (image or color).
-A **chips bar** under the phone lists every element as an always-reachable click target.
+An **inspector panel** beside the phone holds everything: element tabs, a drag-and-drop
+art zone (the current image is the interface — hover to replace/remove), curated color
+swatches plus a custom picker, AI generation with style presets, and text controls.
 
 **Text overlays.** “＋ Add text” drops a styled text onto the game. Edit its content, size
 and color in the popover, and **drag it on the phone** to place it. Text edits live-patch
