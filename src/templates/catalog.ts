@@ -190,6 +190,48 @@ export const TEMPLATES: TemplateMeta[] = [
     bg: '#1a1530',
     elements: [{ key: 'hero', label: 'Hero', image: true, color: true }],
   },
+  {
+    id: 'slots',
+    name: 'Lucky Slots',
+    genre: 'Casino',
+    tagline: 'Spin the reels and line up the jackpot.',
+    accent: '#ffd24d',
+    bg: '#3a0d18', // deep casino red
+    elements: [
+      { key: 'machine', label: 'Machine', image: false, color: true },
+      { key: 'symbol', label: 'Jackpot symbol', image: true, color: false },
+    ],
+  },
+  {
+    id: 'scratch',
+    name: 'Scratch & Win',
+    genre: 'Casino',
+    tagline: 'Scratch the foil to reveal your prize.',
+    accent: '#c8a24a',
+    bg: '#0e3b25', // felt green
+    elements: [
+      { key: 'foil', label: 'Foil', image: false, color: true },
+      { key: 'prize', label: 'Prize', image: true, color: false },
+    ],
+  },
+  {
+    id: 'dice',
+    name: 'Lucky Dice',
+    genre: 'Casino',
+    tagline: 'Roll for sevens, elevens and doubles.',
+    accent: '#e84d5b',
+    bg: '#12352a', // felt green
+    elements: [{ key: 'dice', label: 'Dice', image: false, color: true }],
+  },
+  {
+    id: 'highlow',
+    name: 'Higher or Lower',
+    genre: 'Casino',
+    tagline: 'Call the next card to win the streak.',
+    accent: '#b3304a',
+    bg: '#1c1430', // velvet purple
+    elements: [{ key: 'card', label: 'Card frame', image: false, color: true }],
+  },
 ];
 
 export function getTemplate(id: string): TemplateMeta {

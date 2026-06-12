@@ -19,6 +19,10 @@ import { knife } from './templates/knife';
 import { drop } from './templates/drop';
 import { cannon } from './templates/cannon';
 import { jump } from './templates/jump';
+import { slots } from './templates/slots';
+import { scratch } from './templates/scratch';
+import { dice } from './templates/dice';
+import { highlow } from './templates/highlow';
 import { lighten, darken } from './color';
 
 // Builds a vertical gradient texture from a base color so games have depth
@@ -59,6 +63,10 @@ const REGISTRY: Record<string, Template> = {
   drop,
   cannon,
   jump,
+  slots,
+  scratch,
+  dice,
+  highlow,
 };
 
 export class Runner {

@@ -43,6 +43,7 @@ body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background:
   display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .card-preview .genre { position: absolute; top: 10px; left: 10px; font-size: 11px; font-weight: 700;
   color: #0b0e17; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.card-sleep { position: absolute; inset: 0; }
 .card-body { padding: 14px 16px 18px; }
 .card-body h3 { margin: 0 0 4px; font-size: 17px; }
 .card-body p { margin: 0 0 14px; font-size: 13px; color: var(--muted); min-height: 34px; }

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor } from '../store';
 import { TEMPLATES, type TemplateMeta } from '../templates/catalog';
 import { DEFAULT_CONFIG, type PlayableConfig } from '../runtime/types';
@@ -21,9 +21,34 @@ export function Gallery() {
   );
 }
 
+// Mounts the live preview only while the card is near the viewport. Browsers
+// cap active WebGL contexts (~16) and silently kill the oldest, so running
+// all 21 previews at once blanks the early cards — and burns CPU for nothing.
+function useInView<T extends HTMLElement>(marginPx = 160) {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // IO only fires on rendering frames, so do one synchronous geometry check
+    // up front — initially-visible cards mount immediately (and in hidden
+    // tabs, where IO stays silent until the tab is shown).
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight + marginPx && r.bottom > -marginPx) setInView(true);
+    const obs = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: `${marginPx}px` }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [marginPx]);
+  return { ref, inView };
+}
+
 function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void }) {
-  // Each card auto-plays the real runtime in demo mode, tinted with the
-  // template's accent — no canned video to keep in sync.
+  const { ref, inView } = useInView<HTMLDivElement>();
+  // Each visible card auto-plays the real runtime in demo mode, tinted with
+  // the template's accent — no canned video to keep in sync.
   const demoConfig = useMemo<PlayableConfig>(
     () => ({
       ...DEFAULT_CONFIG,
@@ -35,8 +60,12 @@ function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void
 
   return (
     <div className="card">
-      <div className="card-preview" style={{ borderColor: meta.accent }}>
-        <RuntimeMount config={demoConfig} demo />
+      <div className="card-preview" style={{ borderColor: meta.accent }} ref={ref}>
+        {inView ? (
+          <RuntimeMount config={demoConfig} demo />
+        ) : (
+          <div className="card-sleep" style={{ background: `linear-gradient(170deg, ${meta.bg}, #0b1116)` }} />
+        )}
         <span className="genre" style={{ background: meta.accent }}>{meta.genre}</span>
       </div>
       <div className="card-body">
