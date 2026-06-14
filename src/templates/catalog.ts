@@ -232,6 +232,58 @@ export const TEMPLATES: TemplateMeta[] = [
     bg: '#1c1430', // velvet purple
     elements: [{ key: 'card', label: 'Card frame', image: false, color: true }],
   },
+  {
+    id: 'brickbreak',
+    name: 'Brick Breaker',
+    genre: 'Arcade',
+    tagline: 'Bounce the ball to smash every brick.',
+    accent: '#4f9dff',
+    bg: '#101b33',
+    elements: [
+      { key: 'paddle', label: 'Paddle', image: true, color: true },
+      { key: 'ball', label: 'Ball', image: false, color: true },
+      { key: 'brick', label: 'Bricks', image: false, color: true },
+    ],
+  },
+  {
+    id: 'claw',
+    name: 'Claw Machine',
+    genre: 'Skill',
+    tagline: 'Time the drop to grab a prize.',
+    accent: '#ff5da2',
+    bg: '#241433',
+    elements: [
+      { key: 'claw', label: 'Claw', image: false, color: true },
+      { key: 'prize', label: 'Prize', image: true, color: false },
+    ],
+  },
+  {
+    id: 'merge2048',
+    name: '2048',
+    genre: 'Puzzle',
+    tagline: 'Swipe to merge tiles and double up.',
+    accent: '#ff8a3d',
+    bg: '#241a12',
+    elements: [{ key: 'tile', label: 'Tiles', image: false, color: true }],
+  },
+  {
+    id: 'match3',
+    name: 'Gem Match',
+    genre: 'Puzzle',
+    tagline: 'Swap to line up three or more gems.',
+    accent: '#7c5cff',
+    bg: '#171231',
+    elements: [{ key: 'frame', label: 'Board', image: false, color: true }],
+  },
+  {
+    id: 'bubbleshoot',
+    name: 'Bubble Shooter',
+    genre: 'Puzzle',
+    tagline: 'Aim and fire to pop matching bubbles.',
+    accent: '#28b6e8',
+    bg: '#10243a',
+    elements: [{ key: 'launcher', label: 'Launcher', image: false, color: true }],
+  },
 ];
 
 export function getTemplate(id: string): TemplateMeta {

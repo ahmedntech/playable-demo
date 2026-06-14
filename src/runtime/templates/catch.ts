@@ -91,8 +91,9 @@ export const catchGame: Template = {
         it.y += (it as any)._v * dt;
         it.rotation += dt * 2;
         if (it.y >= paddle.y - 22 && Math.abs(it.x - paddle.x) < 56) {
+          const hitX = it.x; // capture before destroy
           remove(it);
-          flash(it.x, paddle.y - 22);
+          flash(hitX, paddle.y - 22);
           ctx.addScore();
         } else if (it.y > H + 30) {
           remove(it);

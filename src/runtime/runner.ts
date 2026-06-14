@@ -23,6 +23,11 @@ import { slots } from './templates/slots';
 import { scratch } from './templates/scratch';
 import { dice } from './templates/dice';
 import { highlow } from './templates/highlow';
+import { brickbreak } from './templates/brickbreak';
+import { claw } from './templates/claw';
+import { merge2048 } from './templates/merge2048';
+import { match3 } from './templates/match3';
+import { bubbleshoot } from './templates/bubbleshoot';
 import { lighten, darken } from './color';
 
 // Builds a vertical gradient texture from a base color so games have depth
@@ -67,6 +72,11 @@ const REGISTRY: Record<string, Template> = {
   scratch,
   dice,
   highlow,
+  brickbreak,
+  claw,
+  merge2048,
+  match3,
+  bubbleshoot,
 };
 
 export class Runner {

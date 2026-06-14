@@ -4,10 +4,11 @@ A no-code playable-ad builder. Browse a **gallery of game templates** with live 
 previews, pick one, customize brand/gameplay/CTA in a live editor, and export a single
 self-contained, MRAID-compliant HTML ad.
 
-**21 game templates** ship today, spanning genres: Tap Frenzy, Whack Attack, Catch Master,
+**26 game templates** ship today, spanning genres: Tap Frenzy, Whack Attack, Catch Master,
 Tower Stack, Slice It, Tile Tap, Perfect Stop, Spin Wheel, Match Pairs, Bubble Pop, Color Fill,
-Lane Dash, Tap & Fly, Knife Hit, Ball Drop, Cannon Pop, Tap Jump — plus a casino pack:
-Lucky Slots, Scratch & Win, Lucky Dice, Higher or Lower. Each has an interactive mode and an
+Lane Dash, Tap & Fly, Knife Hit, Ball Drop, Cannon Pop, Tap Jump; a casino pack — Lucky Slots,
+Scratch & Win, Lucky Dice, Higher or Lower; and an arcade/puzzle pack — Brick Breaker, Claw
+Machine, 2048, Gem Match (match-3), Bubble Shooter. Each has an interactive mode and an
 auto-playing demo loop used for the gallery previews (lazy-mounted in view, so the browser's
 WebGL context limit is never hit).
 
