@@ -65,20 +65,22 @@ export function RuntimeMount({ config, demo, onCta, editMode, onElementTap, onTe
         gameRef.current = game;
       })
       .catch((e) => {
-        el.innerHTML = `<div class="runtime-error">${(e as Error).message}</div>`;
+        try { el.innerHTML = `<div class="runtime-error">${(e as Error).message}</div>`; } catch { /* ignore */ }
       });
     return () => {
       cancelled = true;
-      game?.destroy();
+      // destroy() can throw if the GL context was already lost — must never
+      // propagate out of a React cleanup or it unmounts the whole app.
+      try { game?.destroy(); } catch { /* ignore */ }
       gameRef.current = null;
-      el.innerHTML = '';
+      try { el.innerHTML = ''; } catch { /* ignore */ }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [structConfig, demo, editMode, remountKey]);
 
   // Fast path: live-patch text overlays on the running game.
   useEffect(() => {
-    gameRef.current?.applyTexts?.(config.texts, elementLabels);
+    try { gameRef.current?.applyTexts?.(config.texts, elementLabels); } catch { /* ignore */ }
   }, [config, elementLabels]);
 
   return <div className="runtime-mount" ref={ref} />;

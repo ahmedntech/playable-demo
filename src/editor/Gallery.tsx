@@ -3,6 +3,8 @@ import { useEditor } from '../store';
 import { TEMPLATES, type TemplateMeta } from '../templates/catalog';
 import { DEFAULT_CONFIG, type PlayableConfig } from '../runtime/types';
 import { RuntimeMount } from '../components/RuntimeMount';
+import { PreviewBoundary } from '../components/PreviewBoundary';
+import { registerPreview } from '../lib/previewManager';
 
 export function Gallery() {
   const chooseTemplate = useEditor((s) => s.chooseTemplate);
@@ -21,32 +23,15 @@ export function Gallery() {
   );
 }
 
-// Mounts the live preview only while the card is near the viewport. Browsers
-// cap active WebGL contexts (~16) and silently kill the oldest, so running
-// all 21 previews at once blanks the early cards — and burns CPU for nothing.
-function useInView<T extends HTMLElement>(marginPx = 160) {
-  const ref = useRef<T>(null);
+function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void }) {
+  // The preview manager caps how many cards run a live WebGL context at once
+  // (the nearest-to-center MAX), so big screens never exhaust GL contexts.
+  const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    // IO only fires on rendering frames, so do one synchronous geometry check
-    // up front — initially-visible cards mount immediately (and in hidden
-    // tabs, where IO stays silent until the tab is shown).
-    const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight + marginPx && r.bottom > -marginPx) setInView(true);
-    const obs = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: `${marginPx}px` }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [marginPx]);
-  return { ref, inView };
-}
-
-function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void }) {
-  const { ref, inView } = useInView<HTMLDivElement>();
+    if (!ref.current) return;
+    return registerPreview(ref.current, setInView);
+  }, []);
   // Each visible card auto-plays the real runtime in demo mode, tinted with
   // the template's accent — no canned video to keep in sync.
   const demoConfig = useMemo<PlayableConfig>(
@@ -61,11 +46,14 @@ function TemplateCard({ meta, onPick }: { meta: TemplateMeta; onPick: () => void
   return (
     <div className="card">
       <div className="card-preview" style={{ borderColor: meta.accent }} ref={ref}>
-        {inView ? (
-          <RuntimeMount config={demoConfig} demo />
-        ) : (
-          <div className="card-sleep" style={{ background: `linear-gradient(170deg, ${meta.bg}, #0b1116)` }} />
-        )}
+        {(() => {
+          const poster = <div className="card-sleep" style={{ background: `linear-gradient(170deg, ${meta.bg}, #0b1116)` }} />;
+          return inView ? (
+            <PreviewBoundary fallback={poster}>
+              <RuntimeMount config={demoConfig} demo />
+            </PreviewBoundary>
+          ) : poster;
+        })()}
         <span className="genre" style={{ background: meta.accent }}>{meta.genre}</span>
       </div>
       <div className="card-body">

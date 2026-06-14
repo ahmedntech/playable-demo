@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useEditor } from '../store';
 import { RuntimeMount } from '../components/RuntimeMount';
+import { PreviewBoundary } from '../components/PreviewBoundary';
 import { getTemplate } from '../templates/catalog';
 import { Inspector } from './Inspector';
 
@@ -26,15 +27,17 @@ export function Preview() {
       <div className="phone-wrap">
         <div className={'phone' + (editMode ? ' editing' : '')}>
           <div className="phone-screen">
-            <RuntimeMount
-              config={config}
-              remountKey={previewKey}
-              editMode={editMode}
-              elementLabels={elementLabels}
-              onElementTap={(key) => setActiveElement(key)}
-              onTextMove={(id, x, y) => updateText(id, { x, y })}
-              onCta={(url) => alert('CTA tapped → would open: ' + url)}
-            />
+            <PreviewBoundary fallback={<div className="runtime-error">Preview hiccup — tap ↻ Replay.</div>}>
+              <RuntimeMount
+                config={config}
+                remountKey={previewKey}
+                editMode={editMode}
+                elementLabels={elementLabels}
+                onElementTap={(key) => setActiveElement(key)}
+                onTextMove={(id, x, y) => updateText(id, { x, y })}
+                onCta={(url) => alert('CTA tapped → would open: ' + url)}
+              />
+            </PreviewBoundary>
           </div>
         </div>
         <button className={'edit-toggle' + (editMode ? ' on' : '')} onClick={toggleEditMode}>

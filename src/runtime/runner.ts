@@ -205,11 +205,20 @@ export class Runner {
   }
 
   private teardown() {
-    this.controller?.destroy();
+    // Every step is guarded: if the browser already killed this WebGL context
+    // (too many at once), Pixi's destroy() throws — and an uncaught throw here
+    // would propagate out of React and blank the whole app. Never let it.
+    try { this.controller?.destroy(); } catch { /* ignore */ }
     this.controller = undefined;
-    this.app.ticker.stop();
-    this.app.canvas?.remove(); // never leave a dead canvas in the DOM
-    this.app.destroy(true, { children: true });
+    // Capture the GL context, then force-release it: Pixi's destroy doesn't
+    // free the WebGL context synchronously, so rapid gallery mount/unmount can
+    // pile up orphaned contexts and trip the browser's hard limit (blank cards).
+    let gl: WebGLRenderingContext | undefined;
+    try { gl = (this.app.renderer as any)?.gl; } catch { /* ignore */ }
+    try { this.app.ticker.stop(); } catch { /* ignore */ }
+    try { this.app.canvas?.remove(); } catch { /* ignore */ } // never leave a dead canvas in the DOM
+    try { this.app.destroy(true, { children: true }); } catch { /* ignore */ }
+    try { gl?.getExtension('WEBGL_lose_context')?.loseContext(); } catch { /* ignore */ }
   }
 
   // ---------- edit mode ----------
