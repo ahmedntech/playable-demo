@@ -175,6 +175,26 @@ button.primary:hover { filter: brightness(1.07); border-color: var(--gold); }
 
 .aside { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
 .aside strong { color: var(--gold); }
+
+/* A/B variant strip */
+.var-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.var-chip { display: inline-flex; align-items: center; border-radius: 999px; overflow: hidden;
+  background: #18222e; border: 1px solid var(--line); }
+.var-chip.on { border-color: var(--gold); background: rgba(252,181,20,.12); }
+.var-pick { background: none; border: none; color: var(--text); font-weight: 700; font-size: 13px; padding: 6px 4px 6px 13px; }
+.var-chip.on .var-pick { color: var(--gold); }
+.var-x { background: none; border: none; color: var(--muted); font-size: 11px; padding: 6px 9px 6px 5px; cursor: pointer; }
+.var-x:hover { color: #ff8090; }
+.var-add { background: none; border: 1px dashed var(--line); color: var(--gold); border-radius: 999px;
+  width: 32px; font-size: 16px; font-weight: 700; }
+.var-add:hover { border-color: var(--gold); }
+
+/* brand kit */
+.kit-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.kit-swatch { width: 26px; height: 26px; border-radius: 7px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.3); }
+.kit-logo { height: 26px; max-width: 60px; object-fit: contain; border-radius: 4px; }
+.kit-name { font-size: 13px; color: var(--muted); }
+button.wide { width: 100%; margin-top: 8px; }
 .aside.autosave { margin-top: 14px; font-size: 12px; }
 .link-btn.inline { display: inline; padding: 0; font-size: 12px; text-decoration: underline; }
 

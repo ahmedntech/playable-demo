@@ -29,9 +29,16 @@ the running game (no remount), and overlays ship inside the exported ad.
 a score-counter pop on every point. Backdrops carry ambient drifting particles, and the
 intro's start button pulses.
 
-**Autosave.** The whole project (template, art, colors, texts) persists to localStorage —
-refresh and you land back in the editor where you left off. “Start over” in the Export
-section clears it.
+**A/B variants.** Duplicate a playable into variants (A/B/C…), tweak each independently
+(colors, difficulty, CTA, art), and **batch-export the whole set** as labeled files
+(`name-network-A.html`, `-B`, …) for split-testing. `config` always mirrors the active
+variant, so every existing edit action works unchanged.
+
+**Brand kit.** Save a playable's logo, primary color, font and CTA as a reusable kit
+(its own localStorage key, spans projects) and apply it to any template in one click.
+
+**Autosave.** The whole variant set persists to localStorage — refresh and you land back in
+the editor where you left off. “Start over” in the Export section clears it.
 
 **AI art (nano-banana).** Every image-capable element (and the background) has a
 “✨ Generate with AI” panel: a prompt pre-seeded from the element, rendered by Google's
